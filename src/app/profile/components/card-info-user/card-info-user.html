@@ -5,17 +5,19 @@
 </div>
 } @if (!loading() && profile()) {
 <div
-  class="flex flex-col gap-1 md:gap-5 p-4 md:p-8 bg-[#F0F4F9] rounded-lg shadow-lg border border-[#757575] text-center justify-center items-center text-black"
+  class="flex flex-col gap-1 md:gap-5 p-4 md:p-8 bg-[#F0F4F9] rounded-lg shadow-lg border-[0.5px] border-[#757575] text-center justify-center items-center text-black"
 >
   <img
     src="../../../../assets/images/optimusprain.jpg"
     alt="Imagen de perfíl"
     class="w-[110px] h-[110px] rounded-full"
   />
+
   <div class="flex items-center gap-3">
     @if (editingField() === 'fullName') {
     <input
       type="text"
+      placeholder="Tu nombre completo"
       class="border-b border-gray-400 outline-none bg-transparent flex-1 p-1 focus:border-[#9811fb] transition"
       [value]="tempValue()"
       (input)="tempValue.set($any($event.target).value)"
@@ -24,11 +26,11 @@
     />
     } @else {
     <span class="text-base md:text-2xl lg:text-xl 2xl:text-2xl font-bold text-black">
-      {{ profile()!.fullName || 'John Joe' }}
+      {{ profile()?.fullName || 'Tu nombre completo' }}
     </span>
     }
     <button
-      class="cursor-pointer text-[#9811fb] hover:bg-[#9811fb] hover:text-white rounded-full trasition items-center justify-center flex p-1"
+      class="cursor-pointer text-[#9811fb] hover:bg-[#9811fb] hover:text-white rounded-full transition items-center justify-center flex p-1"
     >
       <mat-icon
         (click)="editingField() === 'fullName' ? saveField('fullName') : startEditing('fullName')"
@@ -42,6 +44,7 @@
     @if (editingField() === 'username') {
     <input
       type="text"
+      placeholder="@nombre_usuario"
       class="border-b border-gray-400 outline-none bg-transparent flex-1 p-1 focus:border-[#9811fb] transition"
       [value]="tempValue()"
       (input)="tempValue.set($any($event.target).value)"
@@ -49,12 +52,12 @@
       (keyup.escape)="cancelEditing()"
     />
     } @else {
-    <span class="text-xs md:text-base text-[#757575] font-normal"
-      >@{{ profile()!.username || 'User test' }}</span
-    >
+    <span class="text-xs md:text-base text-[#757575] font-normal">
+      {{ profile()?.username ? '@' + profile()!.username : 'nombre_usuario' }}
+    </span>
     }
     <button
-      class="cursor-pointer text-[#9811fb] hover:bg-[#9811fb] hover:text-white rounded-full trasition items-center justify-center flex p-1"
+      class="cursor-pointer text-[#9811fb] hover:bg-[#9811fb] hover:text-white rounded-full transition items-center justify-center flex p-1"
     >
       <mat-icon
         (click)="editingField() === 'username' ? saveField('username') : startEditing('username')"
@@ -68,16 +71,29 @@
     @if (editingField() === 'bibliography') {
     <textarea
       rows="10"
-      class="w-[230px] md:w-[450px] lg:w-[450px] 2xl:w-[400px] 3xl:w-[510px] border border-gray-300 rounded-md p-2 resize-none outline-none focus:border-[#9811fb] transition"
+      maxlength="1500"
+      placeholder="Escribe tu bibliografía (máx. 1500 caracteres)"
+      class="w-[230px] md:w-[450px] lg:w-[650px] 2xl:w-[400px] 3xl:w-[510px] border border-gray-300 rounded-md p-2 resize-none outline-none focus:border-[#9811fb] transition"
       [value]="tempValue()"
       (input)="tempValue.set($any($event.target).value)"
       (keyup.escape)="cancelEditing()"
     ></textarea>
+
+    <span class="text-xs text-gray-500 self-end"> {{ tempValue().length }}/1500 caracteres </span>
     } @else {
     <span class="text-sm md:text-base font-medium text-[#757575]">
-      {{ profile()!.bibliography || 'Escribe tu bibliografía aquí' }}
+      {{ displayedBibliography() || 'Escribe tu bibliografía aquí' }}
     </span>
-    }
+
+    @if ((profile()?.bibliography?.length ?? 0) > 500) {
+    <button
+      class="text-[#9811fb] text-xs font-semibold hover:underline"
+      (click)="toggleBibliography()"
+    >
+      {{ showFullBibliography() ? 'Ver menos' : 'Ver más...' }}
+    </button>
+    } }
+
     <button
       class="cursor-pointer text-[#9811fb] hover:bg-[#9811fb] hover:text-white rounded-full trasition items-center justify-center flex p-1"
     >

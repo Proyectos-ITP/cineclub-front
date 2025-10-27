@@ -1,6 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ProfileInterface } from '../../interfaces/profile.interface';
-import { TokenService } from '../../../auth/services/token.service';
 import { ProfileService } from '../../services/profile.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -11,7 +10,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
   standalone: true,
   imports: [MatIconModule, CommonModule],
   templateUrl: './card-info-user.html',
-  styleUrl: './card-info-user.scss',
+  styleUrls: ['./card-info-user.scss'],
 })
 export class CardInfoUser implements OnInit {
   profile = signal<ProfileInterface | null>(null);
@@ -19,28 +18,35 @@ export class CardInfoUser implements OnInit {
   errorMessage = signal<string | null>(null);
   editingField = signal<keyof ProfileInterface | null>(null);
   tempValue = signal<string>('');
+  showFullBibliography = signal<boolean>(false);
 
   private readonly _profileService = inject(ProfileService);
-  private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _supabaseClient = inject(SupabaseClient);
 
   ngOnInit(): void {
     this.loadProfile();
   }
 
+  readonly displayedBibliography = computed(() => {
+    const bio = this.profile()?.bibliography ?? '';
+    if (bio.length <= 500 || this.showFullBibliography()) return bio;
+    return bio.slice(0, 500) + '...';
+  });
+
+  toggleBibliography(): void {
+    this.showFullBibliography.update((v) => !v);
+  }
+
   async loadProfile(): Promise<void> {
     try {
       this.loading.set(true);
-
       const {
         data: { session },
       } = await this._supabaseClient.auth.getSession();
-
       if (!session)
         throw new Error('No hay una sesión activa. Por favor, inicia sesión nuevamente.');
 
       const userId = session.user.id;
-
       const { data: profile, error: profileError } = await this._supabaseClient
         .from('profile')
         .select('*')
@@ -64,7 +70,6 @@ export class CardInfoUser implements OnInit {
   startEditing(field: keyof ProfileInterface): void {
     const currentProfile = this.profile();
     if (!currentProfile) return;
-
     const currentValue = String(currentProfile[field] ?? '');
     this.tempValue.set(currentValue);
     this.editingField.set(field);
@@ -75,8 +80,9 @@ export class CardInfoUser implements OnInit {
     if (!userId) return;
 
     const newValue = this.tempValue().trim();
-    if (!newValue) {
-      this.errorMessage.set('El campo no puede estar vacío');
+
+    if (newValue.length > 1500) {
+      this.errorMessage.set('La bibliografía no puede superar los 1500 caracteres.');
       return;
     }
 
