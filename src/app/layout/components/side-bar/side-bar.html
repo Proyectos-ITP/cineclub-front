@@ -25,7 +25,7 @@
   </div>
 
   <nav class="flex flex-col mt-4 gap-2 w-full relative flex-1">
-    @for (item of menuItems; track item.title) {
+    @for (item of menuItems(); track item.title) {
 
     <div
       class="flex cursor-pointer p-2 rounded-md hover:bg-[#7d0fd1] transition duration-200 ease-in-out relative"

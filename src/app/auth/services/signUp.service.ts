@@ -33,7 +33,15 @@ export class SignUpService {
       throw error;
     }
 
-    return data;
+    // Transformar roleType de array a objeto
+    const transformedData = {
+      ...data,
+      roleType: Array.isArray(data.roleType)
+        ? data.roleType[0]
+        : data.roleType
+    };
+
+    return transformedData;
   }
 
   async signUp(

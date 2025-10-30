@@ -40,10 +40,18 @@ export class AuthCallbackService {
 
       if (profileError) throw profileError;
 
+      // Transformar roleType de array a objeto
+      const transformedProfile = {
+        ...userProfile,
+        roleType: Array.isArray(userProfile.roleType)
+          ? userProfile.roleType[0]
+          : userProfile.roleType
+      };
+
       this._tokenService.saveSession(
         data.session.access_token,
         data.session.refresh_token,
-        userProfile
+        transformedProfile
       );
 
       await this._router.navigateByUrl('/');

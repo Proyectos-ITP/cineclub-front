@@ -40,7 +40,7 @@ export interface UnifiedSession {
       id: string;
       code: string;
       name: string;
-    }[];
+    };
   };
 }
 export interface UserWithRoleInterface {
@@ -50,5 +50,5 @@ export interface UserWithRoleInterface {
     id: string;
     code: string;
     name: string;
-  }[];
+  };
 }

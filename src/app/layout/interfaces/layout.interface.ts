@@ -4,5 +4,5 @@ export interface SideBarItem {
   route?: string;
   children?: SideBarItem[];
   requiresAuth?: boolean;
-  role?: 'admin' | 'user';
+  roles?: string[]; // Array de roles permitidos (ej: ['ADMIN', 'USER']). Si está vacío o undefined, es visible para todos
 }

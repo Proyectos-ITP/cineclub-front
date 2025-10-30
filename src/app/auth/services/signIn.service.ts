@@ -15,7 +15,7 @@ export class SignInService {
   private readonly _supabaseClient = inject(SupabaseClient);
   private readonly _router: Router = inject(Router);
 
-  private async getUserWithRole(userId: string) {
+  private async getUserWithRole(userId: string): Promise<UserWithRoleInterface> {
     const response = await this._supabaseClient
       .from('profile')
       .select(
@@ -32,7 +32,15 @@ export class SignInService {
       .eq('id', userId)
       .single();
 
-    return response.data as UserWithRoleInterface;
+    // Transformar roleType de array a objeto
+    const transformedData = {
+      ...response.data,
+      roleType: Array.isArray(response.data?.roleType)
+        ? response.data?.roleType[0]
+        : response.data?.roleType,
+    };
+
+    return transformedData as UserWithRoleInterface;
   }
 
   async signIn(email: string, password: string) {
