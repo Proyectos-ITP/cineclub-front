@@ -19,6 +19,12 @@ export interface UserSearchParams {
   country?: string;
 }
 
+export interface UserSearchParams {
+  search?: string;
+  roleType?: string;
+  country?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
