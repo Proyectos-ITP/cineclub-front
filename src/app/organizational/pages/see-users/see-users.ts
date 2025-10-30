@@ -15,13 +15,14 @@ import { SearchField } from '../../../shared/interfaces/search.interface';
 import { SearchFieldsComponent } from '../../../shared/components/search-fields/search-fields.component';
 import { HttpClient } from '@angular/common/http';
 import { Country } from '../../../auth/interfaces/country.interface';
-import { map, take } from 'rxjs';
+import { map, take, firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-user-list',
@@ -38,8 +39,10 @@ import { SupabaseClient } from '@supabase/supabase-js';
     SearchFieldsComponent,
     MatIconModule,
     RouterLink,
+    MatTooltipModule,
   ],
   templateUrl: './see-users.html',
+  styleUrl: './see-users.scss',
 })
 export class SeeUsers implements OnInit {
   displayedColumns: string[] = [
@@ -65,7 +68,6 @@ export class SeeUsers implements OnInit {
     hasNextPage: false,
   };
 
-  // Getter computed para saber si hay filtros activos
   get hasActiveFilters(): boolean {
     return this.hasFilters(this.params);
   }
@@ -206,28 +208,26 @@ export class SeeUsers implements OnInit {
     );
   }
 
-  /**
-   * @param _deleteUser - Ellimina un usuario.
-   */
-  async deleteUser(userId: string) {
+  async deleteUser(id: string) {
+    this.loading = true;
     try {
-      const { error } = await this._supabaseClient.from('profile').delete().eq('id', userId);
+      const { error } = await this._supabaseClient.from('profile').delete().eq('id', id);
 
       if (error) throw error;
 
+      await firstValueFrom(this._userAdminService.deleteUserPanel(id));
+
       this._snackBarService.success('Usuario eliminado correctamente.');
-      this.loadUsers();
+      await this.loadUsers();
       return true;
     } catch (error: any) {
       console.error('❌ Error al eliminar usuario:', error.message);
       this._snackBarService.error('No se pudo eliminar el usuario.');
+      this.loading = false;
       throw error;
     }
   }
 
-  /**
-   * @param openDeleteUserDialog - Abre un modal para eliminar un usuario.
-   */
   openDeleteUserDialog(id: string): void {
     const dialogRef = this._matDialog.open(YesNoDialogComponent, {
       data: {

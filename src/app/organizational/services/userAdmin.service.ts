@@ -3,6 +3,21 @@ import { Injectable, inject } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { SnackBarService } from '../../shared/services/snackBar.service';
 import { supabase } from '../../supabaseClient';
+import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import {
+  ApiResponseCreateInterface,
+  ApiResponseInterface,
+} from '../../shared/interfaces/api-response.interface';
+import { UserCompleteInterface } from '../../auth/interfaces/user.interface';
+import { CreateUserPanel } from '../interfaces/create.interface';
+
+export interface UserSearchParams {
+  search?: string;
+  roleType?: string;
+  country?: string;
+}
 
 export interface UserSearchParams {
   search?: string;
@@ -16,6 +31,7 @@ export interface UserSearchParams {
 export class UserAdminService {
   private readonly supabase: SupabaseClient = supabase;
   private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _httpClient: HttpClient = inject(HttpClient);
 
   async getUsers(page: number = 1, limit: number = 10, params: UserSearchParams = {}) {
     try {
@@ -91,5 +107,30 @@ export class UserAdminService {
       this._snackBarService.error('No se pudieron cargar los roles.');
       throw error;
     }
+  }
+
+  getUserEditPanel(userId: string): Observable<ApiResponseInterface<UserCompleteInterface>> {
+    return this._httpClient.get<ApiResponseInterface<UserCompleteInterface>>(
+      `${environment.backendUrl}users/${userId}`
+    );
+  }
+
+  updateUserProfile(userId: string, body: unknown): Observable<void> {
+    return this._httpClient.patch<void>(`${environment.backendUrl}users/${userId}`, body);
+  }
+
+  createUser(user: CreateUserPanel): Observable<ApiResponseCreateInterface> {
+    return this._httpClient.post<ApiResponseCreateInterface>(
+      `${environment.backendUrl}users/register`,
+      user
+    );
+  }
+
+  updateUser(userId: string, body: unknown): Observable<void> {
+    return this._httpClient.patch<void>(`${environment.backendUrl}users/${userId}`, body);
+  }
+
+  deleteUserPanel(id: string): Observable<unknown> {
+    return this._httpClient.delete(`${environment.backendUrl}users/${id}`);
   }
 }

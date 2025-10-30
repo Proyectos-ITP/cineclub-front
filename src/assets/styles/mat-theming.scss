@@ -439,3 +439,21 @@ mat-form-field {
   align-items: center !important;
   padding-inline: 10px !important;
 }
+
+.mat-mdc-header-cell {
+  text-align: center !important;
+}
+
+.mat-mdc-table tbody,
+.mat-mdc-table tfoot,
+.mat-mdc-table thead,
+.mat-mdc-cell,
+.mat-mdc-footer-cell,
+.mat-mdc-header-row,
+.mat-mdc-row,
+.mat-mdc-footer-row,
+.mat-mdc-table .mat-mdc-header-cell {
+  border-color: $light-purple-800 !important;
+  /* border-inline-color: red; */
+  /* border-block-color: red; */
+}

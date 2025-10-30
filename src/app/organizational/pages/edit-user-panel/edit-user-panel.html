@@ -1,1 +1,162 @@
-<p>edit-user-panel works!</p>
+<div class="brand-content-center py-10 md:py-0">
+  <section
+    class="border-[0.5px] border-[#757575] p-5 md:p-5 lg:p-10 rounded-lg bg-[#F0F4F9] text-black w-[90%] md:w-[90%] lg:w-[90%] 2xl:w-[90%] 3xl:w-[80%]"
+  >
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-2">
+        <button
+          mat-icon-button
+          routerLink="/organizational/see-users"
+          class="!text-gray-700"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="text-2xl font-bold text-gray-800">
+          {{ isEditMode ? 'Editar Usuario' : 'Crear Usuario' }}
+        </h1>
+      </div>
+      <p class="text-gray-600 ml-12">
+        {{ isEditMode ? 'Modifica los datos del usuario' : 'Completa los datos para crear un nuevo usuario' }}
+      </p>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="flex justify-center items-center py-10">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!loading" [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Nombre Completo -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nombre Completo</mat-label>
+          <input matInput formControlName="fullName" placeholder="Ej: Juan Pérez" />
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="userForm.get('fullName')?.hasError('required')">
+            El nombre completo es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Nombre de Usuario -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nombre de Usuario</mat-label>
+          <input matInput formControlName="username" placeholder="Ej: juanperez" />
+          <mat-icon matPrefix>account_circle</mat-icon>
+          <mat-error *ngIf="userForm.get('username')?.hasError('required')">
+            El nombre de usuario es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Correo Electrónico</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="Ej: juan@ejemplo.com" />
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+            El correo es requerido
+          </mat-error>
+          <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+            Ingresa un correo válido
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Teléfono -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="phone" placeholder="Ej: +57 300 123 4567" />
+          <mat-icon matPrefix>phone</mat-icon>
+          <mat-error *ngIf="userForm.get('phone')?.hasError('required')">
+            El teléfono es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <!-- País -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>País</mat-label>
+          <input
+            matInput
+            formControlName="country"
+            [matAutocomplete]="autoCountry"
+            placeholder="Buscar país..."
+          />
+          <mat-icon matPrefix>public</mat-icon>
+          <mat-autocomplete #autoCountry="matAutocomplete">
+            <mat-option
+              *ngFor="let country of filteredCountries | async"
+              [value]="country"
+            >
+              {{ country }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="userForm.get('country')?.hasError('required')">
+            El país es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Rol -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Rol</mat-label>
+          <mat-select formControlName="roleTypeId">
+            <mat-option *ngFor="let role of roles" [value]="role.id">
+              {{ role.name }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-error *ngIf="userForm.get('roleTypeId')?.hasError('required')">
+            El rol es requerido
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Bibliografía (solo en modo edición) -->
+      <mat-form-field *ngIf="isEditMode" appearance="outline" class="w-full">
+        <mat-label>Bibliografía</mat-label>
+        <textarea
+          matInput
+          formControlName="bibliography"
+          rows="4"
+          placeholder="Información adicional sobre el usuario..."
+        ></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+      </mat-form-field>
+
+      <!-- Info sobre contraseña en modo creación -->
+      <div *ngIf="!isEditMode" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-start gap-3">
+          <mat-icon class="text-blue-600 mt-0.5">info</mat-icon>
+          <div>
+            <p class="font-semibold text-blue-800">Contraseña automática</p>
+            <p class="text-sm text-blue-700">
+              Se generará una contraseña segura automáticamente. Te la mostraremos después de crear el usuario.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex gap-4 justify-end pt-4">
+        <button
+          type="button"
+          mat-stroked-button
+          (click)="cancel()"
+          [disabled]="loading"
+          class="!border-gray-400 !text-gray-700 hover:!bg-gray-50"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          mat-raised-button
+          color="primary"
+          [disabled]="loading || userForm.invalid"
+          class="!bg-[var(--primary-color)] !text-white"
+        >
+          <mat-icon class="mr-1">{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+          {{ isEditMode ? 'Guardar Cambios' : 'Crear Usuario' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

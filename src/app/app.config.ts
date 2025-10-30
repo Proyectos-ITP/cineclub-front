@@ -12,6 +12,8 @@ import localeEs from '@angular/common/locales/es';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from './supabaseClient';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { getMaterialPaginatorTranslations } from './shared/utilities/material-paginator-translations';
 
 registerLocaleData(localeEs);
 
@@ -25,6 +27,7 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: { maxWidth: '700px', width: '95vw', padding: '40px' },
     },
+    { provide: MatPaginatorIntl, useValue: getMaterialPaginatorTranslations() },
     { provide: LOCALE_ID, useValue: 'es' },
     { provide: MAT_DATE_LOCALE, useValue: 'es-CO' },
     { provide: SupabaseClient, useValue: supabase },
