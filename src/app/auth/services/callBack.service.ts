@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { supabase } from '../../supabaseClient';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
+import { SnackBarService } from '../../shared/services/snackBar.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,18 +10,23 @@ import { TokenService } from './token.service';
 export class AuthCallbackService {
   private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _router: Router = inject(Router);
+  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
 
   async handleCallback() {
     try {
+      this._tokenService.clearSession();
+
       const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
 
-      if (error) throw error;
-      if (!data.session || !data.user) throw new Error('No se pudo obtener sesión.');
+      if (error) {
+        console.error('❌ Error en exchangeCodeForSession:', error);
+        throw error;
+      }
 
-      await supabase.auth.setSession({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-      });
+      if (!data.session || !data.user) {
+        console.error('❌ No se obtuvo sesión o usuario');
+        throw new Error('No se pudo obtener sesión.');
+      }
 
       const { data: userProfile, error: profileError } = await supabase
         .from('profile')
@@ -38,14 +44,16 @@ export class AuthCallbackService {
         .eq('id', data.user.id)
         .single();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('❌ Error al obtener perfil:', profileError);
+        throw profileError;
+      }
 
-      // Transformar roleType de array a objeto
       const transformedProfile = {
         ...userProfile,
         roleType: Array.isArray(userProfile.roleType)
           ? userProfile.roleType[0]
-          : userProfile.roleType
+          : userProfile.roleType,
       };
 
       this._tokenService.saveSession(
@@ -54,11 +62,18 @@ export class AuthCallbackService {
         transformedProfile
       );
 
+      this._snackBarService.success('¡Cuenta verificada exitosamente! Bienvenido.');
       await this._router.navigateByUrl('/');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('❌ Error en handleCallback:', err);
-      alert('Error al confirmar tu cuenta. Intenta iniciar sesión nuevamente.');
+
+      await supabase.auth.signOut();
+      this._tokenService.clearSession();
+
+      this._snackBarService.info(
+        'Tu cuenta ha sido verificada exitosamente. Por favor, inicia sesión con tus credenciales.'
+      );
       await this._router.navigateByUrl('/auth/login');
     }
   }
