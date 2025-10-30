@@ -1,15 +1,18 @@
 import { SideBarItem } from '../interfaces/layout.interface';
+import { USER_ROLES } from '../../shared/constants/roles.constants';
 
 export const SIDEBAR_ITEMS: SideBarItem[] = [
   {
     icon: 'home',
     title: 'Inicio',
     route: '/',
+    roles: [USER_ROLES.ADMIN, USER_ROLES.USER],
   },
   {
     icon: 'person',
     title: 'Perfil de usuario',
     route: '/profile',
+    roles: [USER_ROLES.ADMIN, USER_ROLES.USER],
     children: [
       {
         icon: 'visibility',
@@ -27,6 +30,7 @@ export const SIDEBAR_ITEMS: SideBarItem[] = [
     icon: 'movie',
     title: 'Películas',
     route: '/movies',
+    roles: [USER_ROLES.ADMIN, USER_ROLES.USER],
     children: [
       {
         icon: 'fiber_new',
@@ -44,6 +48,7 @@ export const SIDEBAR_ITEMS: SideBarItem[] = [
     icon: 'menu_book',
     title: 'Libros',
     route: '/books',
+    roles: [USER_ROLES.ADMIN, USER_ROLES.USER],
     children: [
       {
         icon: 'fiber_new',
@@ -61,18 +66,13 @@ export const SIDEBAR_ITEMS: SideBarItem[] = [
     icon: 'settings',
     title: 'Configuración',
     route: '/admin/config',
-    role: 'admin',
+    roles: [USER_ROLES.ADMIN],
     children: [
       {
         icon: 'people',
         title: 'Ver usuarios',
         route: '/organizational/see-users',
       },
-      // {
-      //   icon: 'star_rate',
-      //   title: 'Mejores reseñas',
-      //   route: '/books/top-rated',
-      // },
     ],
   },
 ];

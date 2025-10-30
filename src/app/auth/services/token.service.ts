@@ -61,6 +61,11 @@ export class TokenService {
     return this.getUserData()?.id ?? null;
   }
 
+  /** ✅ NUEVO: obtener el código del rol del usuario */
+  getUserRole(): string | null {
+    return this.getUserData()?.roleType?.code ?? null;
+  }
+
   isLoggedIn(): boolean {
     return !!this.getAccessToken();
   }
