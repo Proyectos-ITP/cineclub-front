@@ -49,19 +49,12 @@ export class AuthCallbackService {
         throw profileError;
       }
 
-      const transformedProfile = {
-        ...userProfile,
-        roleType: Array.isArray(userProfile.roleType)
-          ? userProfile.roleType[0]
-          : userProfile.roleType,
-      };
-
       // Transformar roleType de array a objeto
       const transformedProfile = {
         ...userProfile,
         roleType: Array.isArray(userProfile.roleType)
           ? userProfile.roleType[0]
-          : userProfile.roleType
+          : userProfile.roleType,
       };
 
       this._tokenService.saveSession(
