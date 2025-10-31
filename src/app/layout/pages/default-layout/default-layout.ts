@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NavBar } from '../../components/nav-bar/nav-bar';
 import { SupabaseService } from '../../../auth/services/supabase.service';
 import { filter, Subscription } from 'rxjs';
@@ -15,19 +16,19 @@ import { SideBar } from '../../components/side-bar/side-bar';
 })
 export class DefaultLayout implements OnInit, OnDestroy {
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
+  private readonly _router: Router = inject(Router);
+  private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private sub?: Subscription;
   private initSub?: Subscription;
-  private readonly _router: Router = inject(Router);
 
-  showSidebar = true;
-  isReady = false;
-  isLoggedIn = false;
-  isInitializing = true;
+  showSidebar: boolean = true;
+  isReady: boolean = false;
+  isLoggedIn: boolean = false;
+  isInitializing: boolean = true;
 
   constructor() {
     this._router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .subscribe((event: any) => {
         const hideSidebarRoutes = ['/profile/register-profile'];
 

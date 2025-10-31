@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 
@@ -37,4 +37,9 @@ import { CommonModule } from '@angular/common';
 })
 export class CustomSnackbarComponent {
   data = inject<{ message: string; type: string }>(MAT_SNACK_BAR_DATA);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {
+    Promise.resolve().then(() => this.cdr.detectChanges());
+  }
 }

@@ -16,12 +16,15 @@
       <router-outlet></router-outlet>
     </main>
   </div>
-  } @else { @if (showSidebar) {
-  <app-side-bar></app-side-bar>}
-  <div class="app-container w-full animate-fade-in">
-    <main class="main w-full">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-  } }
+  } @else {
+    @if (showSidebar) {
+      <app-side-bar></app-side-bar>
+    }
+    <div class="app-container w-full animate-fade-in">
+      <main class="main w-full">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  }
+}
 </article>

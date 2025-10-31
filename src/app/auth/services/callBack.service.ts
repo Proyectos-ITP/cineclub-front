@@ -19,12 +19,12 @@ export class AuthCallbackService {
       const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
 
       if (error) {
-        console.error('❌ Error en exchangeCodeForSession:', error);
+        console.error('❌ [Callback] Error en exchangeCodeForSession:', error);
         throw error;
       }
 
       if (!data.session || !data.user) {
-        console.error('❌ No se obtuvo sesión o usuario');
+        console.error('❌ [Callback] No se obtuvo sesión o usuario');
         throw new Error('No se pudo obtener sesión.');
       }
 
@@ -49,7 +49,6 @@ export class AuthCallbackService {
         throw profileError;
       }
 
-      // Transformar roleType de array a objeto
       const transformedProfile = {
         ...userProfile,
         roleType: Array.isArray(userProfile.roleType)
@@ -65,6 +64,7 @@ export class AuthCallbackService {
 
       this._snackBarService.success('¡Cuenta verificada exitosamente! Bienvenido.');
       await this._router.navigateByUrl('/');
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('❌ Error en handleCallback:', err);

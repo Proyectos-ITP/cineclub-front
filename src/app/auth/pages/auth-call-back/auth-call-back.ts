@@ -12,14 +12,13 @@ import { AuthCallbackService } from '../../services/callBack.service';
   styleUrl: './auth-call-back.scss',
 })
 export class AuthCallBack implements OnInit {
-  private readonly _authCallbackService = inject(AuthCallbackService);
-  private readonly _router = inject(Router);
+  private readonly _authCallbackService: AuthCallbackService = inject(AuthCallbackService);
+  private readonly _router: Router = inject(Router);
   private readonly _platformId = inject(PLATFORM_ID);
 
   async ngOnInit() {
     if (!isPlatformBrowser(this._platformId)) return;
 
-    console.log('🔄 Procesando confirmación de email...');
     try {
       await this._authCallbackService.handleCallback();
     } catch (error) {
