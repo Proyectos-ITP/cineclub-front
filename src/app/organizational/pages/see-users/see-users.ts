@@ -15,7 +15,7 @@ import { SearchField } from '../../../shared/interfaces/search.interface';
 import { SearchFieldsComponent } from '../../../shared/components/search-fields/search-fields.component';
 import { HttpClient } from '@angular/common/http';
 import { Country } from '../../../auth/interfaces/country.interface';
-import { map, take, firstValueFrom } from 'rxjs';
+import { map, take } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
@@ -61,7 +61,7 @@ export class SeeUsers implements OnInit {
   params: any = {};
   paginationParams: PaginationInterface = {
     page: 1,
-    perPage: 25,
+    perPage: 5,
     total: 0,
     pageCount: 0,
     hasPreviousPage: false,
@@ -95,7 +95,7 @@ export class SeeUsers implements OnInit {
     },
   ];
 
-  private readonly _ngZone = inject(NgZone);
+  private readonly _ngZone: NgZone = inject(NgZone);
   private readonly _userAdminService: UserAdminService = inject(UserAdminService);
   private readonly _http: HttpClient = inject(HttpClient);
   private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -198,8 +198,6 @@ export class SeeUsers implements OnInit {
     if (this.searchFieldsComponent) {
       this.searchFieldsComponent.reset();
     }
-    this.params = {};
-    this.paginationParams.page = 1;
   }
 
   private hasFilters(obj: Record<string, any>): boolean {
@@ -214,8 +212,6 @@ export class SeeUsers implements OnInit {
       const { error } = await this._supabaseClient.from('profile').delete().eq('id', id);
 
       if (error) throw error;
-
-      await firstValueFrom(this._userAdminService.deleteUserPanel(id));
 
       this._snackBarService.success('Usuario eliminado correctamente.');
       await this.loadUsers();

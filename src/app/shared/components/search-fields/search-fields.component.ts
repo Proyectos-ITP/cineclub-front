@@ -110,7 +110,9 @@ export class SearchFieldsComponent implements OnInit {
   }
 
   public reset(): void {
-    Object.keys(this.form.controls).forEach((key) => this.form.get(key)?.setValue(null));
+    Object.keys(this.form.controls).forEach((key) =>
+      this.form.get(key)?.setValue(null, { emitEvent: false })
+    );
     this.searchChange.emit({});
   }
 }

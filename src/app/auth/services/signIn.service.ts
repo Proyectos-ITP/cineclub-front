@@ -32,7 +32,6 @@ export class SignInService {
       .eq('id', userId)
       .single();
 
-    // Transformar roleType de array a objeto
     const transformedData = {
       ...response.data,
       roleType: Array.isArray(response.data?.roleType)
