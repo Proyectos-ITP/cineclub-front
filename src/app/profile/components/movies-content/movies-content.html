@@ -1,14 +1,89 @@
-<div class="container mx-auto px-4 py-4 text-black">
-  <div class="grid gap-6">
-    @for (movie of movies; track $index) {
-    <app-card-recomendations
-      [title]="movie.title ?? ''"
-      [author]="movie.author ?? ''"
-      [description]="movie.description ?? ''"
-      [image]="movie.image ?? ''"
-      [score]="movie.score ?? 0"
-      [likes]="movie.likes ?? 0"
-      [comments]="movie.comments ?? 0"
-    />}
+<div class="p-8 text-center text-black">
+  <h2 class="text-4xl font-bold mb-8">🎥 Películas guardadas</h2>
+
+  <!-- Cargando -->
+  @if (loading) {
+  <div class="flex flex-col items-center justify-center gap-2 text-gray-600">
+    <span class="loading loading-spinner loading-lg"></span>
+    <p>Cargando películas guardadas...</p>
   </div>
+  }
+
+  <!-- Lista de películas guardadas -->
+  @if (!loading && movies.length > 0) {
+  <div class="flex flex-col gap-6">
+    @for (movie of movies; track movie.id) {
+    <div
+      class="bg-white shadow-md rounded-2xl p-5 flex flex-col sm:flex-row items-start gap-4 hover:shadow-lg hover:scale-[1.01] transition-all duration-300 border border-gray-200 relative"
+    >
+      <!-- Imagen -->
+      @if (movie.posterPath) {
+      <img
+        [src]="movie.posterPath"
+        alt="{{ movie.title }}"
+        class="w-32 h-48 object-cover rounded-xl shadow-sm"
+      />
+      } @else {
+      <img
+        src="https://via.placeholder.com/200x300?text=Sin+imagen"
+        alt="Sin imagen"
+        class="w-32 h-48 object-cover rounded-xl shadow-sm"
+      />
+      }
+
+      <!-- Contenido -->
+      <div class="flex-1 text-left">
+        <!-- Encabezado -->
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <img
+              src="https://i.pravatar.cc/40"
+              alt="avatar"
+              class="w-8 h-8 rounded-full border border-gray-300"
+            />
+            <div>
+              <p class="text-sm font-semibold text-gray-800">Armando Paredes</p>
+              <p class="text-xs text-gray-500">guardó esta película</p>
+            </div>
+          </div>
+
+          <div class="mr-8">
+            <span
+              class="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs rounded-full"
+            >
+              Guardada
+            </span>
+          </div>
+        </div>
+
+        <!-- Título -->
+        <h3 class="text-xl font-semibold mb-1">{{ movie.title }}</h3>
+        <p class="text-gray-700 text-sm mb-3 line-clamp-3">
+          {{ movie.overview || 'Sin descripción disponible.' }}
+        </p>
+
+        <!-- Información adicional -->
+        <p class="text-gray-500 text-xs mb-3">
+          <span class="font-medium">Fecha de estreno:</span>
+          {{ movie.releaseDate | date : 'yyyy-MM-dd' }}
+        </p>
+
+        <!-- Reacciones -->
+        <div class="flex items-center gap-4 text-gray-600 text-sm">
+          <button class="flex items-center gap-1 hover:text-red-500 transition-colors duration-200">
+            ❤️ <span>27</span>
+          </button>
+          <button
+            class="flex items-center gap-1 hover:text-blue-500 transition-colors duration-200"
+          >
+            💬 <span>2</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <p class="text-gray-600 mt-8 text-lg">No hay películas guardadas aún.</p>
+  }
 </div>
