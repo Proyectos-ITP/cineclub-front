@@ -1,8 +1,9 @@
-import { Component, inject, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
 import { isPlatformBrowser } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
+import { WebSocketService } from './shared/services/webSocket.service';
 
 @Component({
   selector: 'app-root',
@@ -11,15 +12,54 @@ import { Subscription } from 'rxjs';
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
-export class App implements OnDestroy {
+export class App implements OnDestroy, OnInit {
   private _iconRegistry = inject(MatIconRegistry);
   private readonly _router = inject(Router);
   private _routerSubscription!: Subscription;
+  private webSocketService = inject(WebSocketService);
   private readonly platformId = inject(PLATFORM_ID);
+  private destroy$ = new Subject<void>();
+  isConnectedWs = false;
 
   constructor() {
     this._setMaterialOutlinedIconsDefault();
     this._listenRouterChanges();
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const session: any = JSON.parse(localStorage.getItem('app_session') || '{}');
+      const userId = session['user']?.['id'];
+
+      console.log(userId);
+      if (userId) {
+        this.webSocketService.connect(userId, session['access_token']);
+
+        this.webSocketService.connectionStatus$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((connected) => {
+            this.isConnectedWs = connected;
+            console.log('Estado de conexión:', connected ? '🟢 Conectado' : '🔴 Desconectado');
+          });
+
+        this.webSocketService.friendRequests$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((requests) => {
+            if (requests.length > 0) {
+              const lastRequest = requests[0];
+              console.log(lastRequest);
+            }
+          });
+
+        this.webSocketService.friendRequestAccepted$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((notification) => {
+            if (notification) {
+              console.log(notification);
+            }
+          });
+      }
+    }
   }
 
   /** Usa el set de íconos Material clásicos */
@@ -45,5 +85,8 @@ export class App implements OnDestroy {
 
   ngOnDestroy(): void {
     this._routerSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.webSocketService.disconnect();
   }
 }
