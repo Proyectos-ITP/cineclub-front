@@ -1,16 +1,33 @@
 @if (!isLoggedIn) {
 <app-home-logout></app-home-logout>
 } @else {
-<div class="text-black flex flex-col items-center justify-center text-center px-6 py-12">
-  <span class="text-6xl sm:text-7xl font-extrabold mb-8 text-purple-700 drop-shadow-md">
-    Bienvenido
-  </span>
-  <h1
-    class="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-semibold mb-8 leading-relaxed max-w-4xl"
-  >
-    🚀 ¡Hola! Tu próxima historia favorita te está esperando. Explora películas y libros que podrían
-    encantarte — déjate sorprender. 🎬📘
-  </h1>
-  <app-movies-card-home></app-movies-card-home>
-</div>
+<article class="text-black flex flex-col items-center justify-center px-6 py-12">
+  <div class="flex flex-col justify-start w-full">
+    <span
+      class="text-lg md:text-3xl lg:text-4xl 2xl:text-5xl 3xl:text-6xl font-extrabold text-[#9811fb] drop-shadow-md"
+    >
+      Descubre nuevas recomendaciones
+    </span>
+    <span
+      class="text-sm md:text-base lg:text-lg 2xl:text-lg 3xl:text-lg font-semibold mb-4 text-[#757575]"
+    >
+      Explora lo que tu comunidad está recomendando y comparte tus favoritos
+    </span>
+  </div>
+  <section class="flex flex-col md:flex-col lg:flex-col 2xl:flex-row 3xl:flex-row gap-10">
+    <div
+      class="flex md:flex lg:flex 2xl:hidden 3xl:hidden w-full h-full md:w-full lg:w-full 2xl:w-[25%] 3xl:w-[25%]"
+    >
+      <app-friend-card></app-friend-card>
+    </div>
+    <div class="flex w-full h-full md:w-full lg:w-full 2xl:w-[75%] 3xl:w-[80%]">
+      <app-card-home-tab></app-card-home-tab>
+    </div>
+    <div
+      class="hidden md:hidden lg:hidden 2xl:flex 3xl:flex w-full h-full md:w-full lg:w-full 2xl:w-[25%] 3xl:w-[20%]"
+    >
+      <app-friend-card></app-friend-card>
+    </div>
+  </section>
+</article>
 }

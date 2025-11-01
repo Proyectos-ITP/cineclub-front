@@ -1,0 +1,77 @@
+<article
+  class="bg-[#F0F4F9]/70 backdrop-blur-sm rounded-lg shadow-lg border border-[#757575]/60 w-full mx-auto p-5 flex flex-col gap-6"
+>
+  <!-- Solicitudes Enviadas -->
+  <section>
+    <div class="flex items-center gap-2 mb-3">
+      <mat-icon class="text-[#9811fb]">send</mat-icon>
+      <h2 class="font-semibold text-lg md:text-xl text-gray-800">Solicitudes enviadas</h2>
+    </div>
+
+    @if (loadingSent) {
+    <p class="text-gray-600 text-sm">Cargando solicitudes enviadas...</p>
+    } @else if (sentRequests.length === 0) {
+    <p class="text-gray-500 text-sm">No has enviado solicitudes todavía.</p>
+    } @else {
+    <div class="flex flex-col gap-2">
+      @for (req of sentRequests; track req.id) {
+      <div
+        class="flex justify-between items-center bg-white rounded-lg border border-gray-300 p-3 shadow-sm hover:shadow-md transition-all"
+      >
+        <div>
+          <p class="text-sm text-gray-800 font-medium">
+            {{ req.user?.fullName || 'Usuario desconocido' }}
+          </p>
+          <p class="text-xs text-gray-500">Estado: {{ req.status | friendStatus }}</p>
+        </div>
+        <mat-icon class="text-gray-400">chevron_right</mat-icon>
+      </div>
+      }
+    </div>
+    }
+  </section>
+
+  <!-- Solicitudes Recibidas -->
+  <section>
+    <div class="flex items-center gap-2 mb-3">
+      <mat-icon class="text-[#9811fb]">mail</mat-icon>
+      <h2 class="font-semibold text-lg md:text-xl text-gray-800">Solicitudes recibidas</h2>
+    </div>
+
+    @if (loadingReceived) {
+    <p class="text-gray-600 text-sm">Cargando solicitudes recibidas...</p>
+    } @else if (receivedRequests.length === 0) {
+    <p class="text-gray-500 text-sm">No tienes solicitudes nuevas.</p>
+    } @else {
+    <div class="flex flex-col gap-2">
+      @for (req of receivedRequests; track req.id) {
+      <div
+        class="flex justify-between items-center bg-white rounded-lg border border-gray-300 p-3 shadow-sm hover:shadow-md transition-all"
+      >
+        <div>
+          <p class="text-sm text-gray-800 font-medium">
+            {{ req.user?.fullName || 'Usuario desconocido' }}
+          </p>
+          <p class="text-xs text-gray-500">Estado: {{ req.status | friendStatus }}</p>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            class="bg-[#9811fb] text-white text-xs px-3 py-1 rounded-md hover:bg-[#7d0fd0]"
+            (click)="acceptRequest(req.senderId)"
+          >
+            Aceptar
+          </button>
+          <button
+            class="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-md hover:bg-gray-300"
+            (click)="rejectRequest(req.senderId)"
+          >
+            Rechazar
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </section>
+</article>

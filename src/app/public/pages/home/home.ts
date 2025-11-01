@@ -6,11 +6,12 @@ import { HomeLogout } from '../../components/home-logout/home-logout';
 import { CommonModule } from '@angular/common';
 import { MoviesService } from '../../services/movies.service';
 import { PaginationInterface } from '../../../shared/interfaces/pagination.interface';
-import { MoviesCardHomeComponent } from '../../components/movies-card-home/movies-card-home';
+import { CardHomeTab } from '../../components/card-home-tab/card-home-tab';
+import { FriendCard } from '../../components/friend-card/friend-card';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatButtonModule, HomeLogout, CommonModule, MoviesCardHomeComponent],
+  imports: [MatButtonModule, HomeLogout, CommonModule, CardHomeTab, FriendCard],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -19,8 +20,8 @@ export class Home implements OnInit {
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
   private sub?: Subscription;
   params: any = {};
-  isReady = false;
-  isLoggedIn = false;
+  isReady: boolean = false;
+  isLoggedIn: boolean = false;
   paginationParams: PaginationInterface = {
     page: 1,
     perPage: 25,
@@ -30,24 +31,11 @@ export class Home implements OnInit {
     hasNextPage: false,
   };
   ngOnInit() {
-    // this.loadMovies();
     this.sub = this._supabaseService.user$
       .pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)))
       .subscribe((user) => {
         this.isReady = true;
         this.isLoggedIn = !!user;
       });
-  }
-
-  loadMovies(filter: string = '') {
-    const query = {
-      page: this.paginationParams.page,
-      PerPage: this.paginationParams.perPage,
-      search: filter,
-      ...this.params,
-    };
-    this._moviesService.getMoviesWithPagination(query).subscribe((response) => {
-      this.paginationParams = response.pagination;
-    });
   }
 }

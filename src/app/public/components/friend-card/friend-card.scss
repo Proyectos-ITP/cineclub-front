@@ -1,0 +1,16 @@
+// Ocultar scrollbar pero mantener funcionalidad de scroll
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none; /* Safari y Chrome */
+  }
+}
+
+// Estilos adicionales para el carrusel
+:host ::ng-deep {
+  .mat-icon {
+    user-select: none;
+  }
+}
