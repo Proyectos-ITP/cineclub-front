@@ -20,6 +20,14 @@ export interface UserCompleteInterface {
   created_at: string;
 }
 
+export interface UserMongoComplete {
+  id: string;
+  fullName?: string;
+  username?: string;
+  email?: string;
+  country: string;
+}
+
 export interface RoleTypeInterface {
   id: string;
   code: string;

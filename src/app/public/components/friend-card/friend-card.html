@@ -1,0 +1,100 @@
+<article
+  class="bg-[#F0F4F9]/70 backdrop-blur-sm rounded-lg shadow-lg border border-[#757575]/60 mx-auto p-4 flex flex-col gap-4 w-[10%] md:w-[10%] lg:w-[10%] 2xl:w-full 3xl:w-full"
+>
+  <!-- Título -->
+  <div class="flex items-center gap-2">
+    <mat-icon class="text-[#9811fb]">people</mat-icon>
+    <span class="font-semibold text-base md:text-xl">Sugerencias de amistad</span>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+  <div class="text-center text-gray-600 py-4">Cargando usuarios...</div>
+  } @else {
+
+  <button
+    (click)="prevPage()"
+    [disabled]="!paginationParams.hasPreviousPage"
+    class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed 2xl:hidden"
+  >
+    <mat-icon class="text-[#9811fb]">chevron_left</mat-icon>
+  </button>
+
+  <!-- Contenedor de cards con scroll horizontal -->
+  <div
+    class="flex gap-4 overflow-x-auto scroll-smooth pb-2 scrollbar-hide px-8 2xl:px-0 2xl:flex-col 2xl:overflow-x-visible"
+  >
+    @for (user of users; track user.email) {
+    <!-- Card horizontal en mobile/md/lg, vertical en 2xl+ -->
+    <div
+      class="flex-shrink-0 w-[300px] md:w-[350px] lg:w-[400px] flex flex-row items-center gap-3 bg-white rounded-lg shadow-md border border-[#d1d1d1] p-3 hover:shadow-lg transition-all 2xl:w-full 2xl:flex-col"
+    >
+      <!-- Imagen -->
+      <img
+        src="../../../../assets/images/defaultUser.png"
+        alt="Usuario"
+        class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover flex-shrink-0"
+      />
+
+      <!-- Contenido -->
+      <div class="flex flex-col flex-1 gap-2 w-full justify-center items-center">
+        <span class="font-semibold text-gray-800 text-sm md:text-base">
+          {{ user.fullName || 'Usuario desconocido' }}
+        </span>
+
+        <div class="flex flex-wrap gap-2">
+          <span
+            class="px-2 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded-full text-gray-700"
+          >
+            {{ user.country }}
+          </span>
+          <span
+            class="px-2 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded-full text-gray-700"
+          >
+            +1
+          </span>
+        </div>
+
+        <button
+          (click)="sendFriendRequest(user.id)"
+          [disabled]="sendingRequest[user.id]"
+          class="w-full py-1.5 text-sm bg-[#9811fb] text-white rounded-lg font-medium hover:bg-[#7d0fd0] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          @if (sendingRequest[user.id]) {
+          <span>Enviando...</span>
+          } @else {
+          <span>Añadir amigo</span>
+          }
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+
+  <button
+    (click)="nextPage()"
+    [disabled]="!paginationParams.hasNextPage"
+    class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed 2xl:hidden"
+  >
+    <mat-icon class="text-[#9811fb]">chevron_right</mat-icon>
+  </button>
+
+  <div class="hidden 2xl:flex justify-between items-center mt-2">
+    <button
+      (click)="prevPage()"
+      [disabled]="!paginationParams.hasPreviousPage"
+      class="px-3 py-1 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button
+      (click)="nextPage()"
+      [disabled]="!paginationParams.hasNextPage"
+      class="px-3 py-1 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+  }
+</article>
