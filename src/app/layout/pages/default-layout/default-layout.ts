@@ -1,23 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NavBar } from '../../components/nav-bar/nav-bar';
 import { SupabaseService } from '../../../auth/services/supabase.service';
 import { filter, Subscription } from 'rxjs';
 import { MatSpinner } from '@angular/material/progress-spinner';
 import { SideBar } from '../../components/side-bar/side-bar';
+import { Notification } from '../../components/notification/notification';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-default-layout',
   standalone: true,
-  imports: [RouterOutlet, NavBar, MatSpinner, SideBar],
+  imports: [
+    RouterOutlet,
+    NavBar,
+    MatSpinner,
+    SideBar,
+    Notification,
+    MatIconModule,
+    MatButtonModule,
+    CommonModule,
+  ],
   templateUrl: './default-layout.html',
   styleUrl: './default-layout.scss',
 })
 export class DefaultLayout implements OnInit, OnDestroy {
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
   private readonly _router: Router = inject(Router);
-  private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private sub?: Subscription;
   private initSub?: Subscription;
 
@@ -25,6 +37,8 @@ export class DefaultLayout implements OnInit, OnDestroy {
   isReady: boolean = false;
   isLoggedIn: boolean = false;
   isInitializing: boolean = true;
+  showNotifications: boolean = false;
+  isClosingNotifications: boolean = false;
 
   constructor() {
     this._router.events
@@ -72,5 +86,22 @@ export class DefaultLayout implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.sub?.unsubscribe();
     this.initSub?.unsubscribe();
+  }
+
+  toggleNotifications(): void {
+    if (this.showNotifications) {
+      this.closeNotifications();
+    } else {
+      this.showNotifications = true;
+      this.isClosingNotifications = false;
+    }
+  }
+
+  closeNotifications(): void {
+    this.isClosingNotifications = true;
+    setTimeout(() => {
+      this.showNotifications = false;
+      this.isClosingNotifications = false;
+    }, 300); // Duración de la animación
   }
 }

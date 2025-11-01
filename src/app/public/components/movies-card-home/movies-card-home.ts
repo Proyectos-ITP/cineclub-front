@@ -10,10 +10,8 @@ import { MoviesContent } from '../../../profile/components/movies-content/movies
 @Component({
   selector: 'app-movies-card-home',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatIconModule, MoviesContent, BooksContent],
+  imports: [],
   templateUrl: './movies-card-home.html',
   styleUrl: './movies-card-home.scss',
 })
-export class MoviesCardHomeComponent {
-  movies = MOVIES_CARD_CONSTANTS;
-}
+export class MoviesCardHomeComponent {}
