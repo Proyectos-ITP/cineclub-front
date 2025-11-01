@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -17,6 +17,7 @@ import { Country } from '../../../auth/interfaces/country.interface';
 import { UserAdminService } from '../../services/userAdmin.service';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { RoleTypeInterface } from '../../../auth/interfaces/user.interface';
+import { RamdomPasswordService } from '../../../shared/services/ramdomPassword.service';
 
 @Component({
   selector: 'app-edit-user-panel',
@@ -45,16 +46,19 @@ export class EditUserPanel implements OnInit {
   filteredCountries: Observable<string[]> = new Observable();
   roles: RoleTypeInterface[] = [];
 
-  private readonly _fb = inject(FormBuilder);
-  private readonly _route = inject(ActivatedRoute);
-  private readonly _router = inject(Router);
-  private readonly _http = inject(HttpClient);
+  private readonly _fb: FormBuilder = inject(FormBuilder);
+  private readonly _route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly _router: Router = inject(Router);
+  private readonly _http: HttpClient = inject(HttpClient);
   private readonly _supabaseClient = inject(SupabaseClient);
-  private readonly _userAdminService = inject(UserAdminService);
-  private readonly _snackBarService = inject(SnackBarService);
+  private readonly _userAdminService: UserAdminService = inject(UserAdminService);
+  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _ramdomPassword: RamdomPasswordService = inject(RamdomPasswordService);
+  private readonly _ngZone: NgZone = inject(NgZone);
 
   ngOnInit() {
     this.initializeForm();
+    this.setupCountryFilter();
     this.loadCountries();
     this.loadRoles();
     this.checkMode();
@@ -72,12 +76,19 @@ export class EditUserPanel implements OnInit {
     });
   }
 
+  setupCountryFilter() {
+    this.filteredCountries = this.userForm.get('country')!.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filterCountries(value || ''))
+    );
+  }
+
   async checkMode() {
     this.userId = this._route.snapshot.paramMap.get('id');
 
     if (this.userId && this.userId !== 'new') {
       this.isEditMode = true;
-      await this.loadUserData();
+      this._ngZone.run(() => this.loadUserData());
     }
   }
 
@@ -91,15 +102,15 @@ export class EditUserPanel implements OnInit {
         .from('profile')
         .select(
           `
-          id,
-          fullName,
-          username,
-          email,
-          phone,
-          country,
-          roleTypeId,
-          bibliography
-        `
+        id,
+        fullName,
+        username,
+        email,
+        phone,
+        country,
+        roleTypeId,
+        bibliography
+      `
         )
         .eq('id', this.userId)
         .single();
@@ -122,7 +133,9 @@ export class EditUserPanel implements OnInit {
       this._snackBarService.error('No se pudo cargar el usuario.');
       this._router.navigate(['/organizational/see-users']);
     } finally {
-      this.loading = false;
+      this._ngZone.run(() => {
+        this.loading = false;
+      });
     }
   }
 
@@ -136,10 +149,6 @@ export class EditUserPanel implements OnInit {
         )
         .subscribe((countries) => {
           this.countries = countries;
-          this.filteredCountries = this.userForm.get('country')!.valueChanges.pipe(
-            startWith(''),
-            map((value) => this._filterCountries(value || ''))
-          );
         });
     } catch (error) {
       console.error('❌ Error al cargar países:', error);
@@ -159,30 +168,7 @@ export class EditUserPanel implements OnInit {
     return this.countries.filter((option) => option.toLowerCase().includes(filterValue));
   }
 
-  private generateRandomPassword(): string {
-    const length = 16;
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-    let password = '';
-
-    // Asegurar que tenga al menos una mayúscula, una minúscula, un número y un carácter especial
-    password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)];
-    password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)];
-    password += '0123456789'[Math.floor(Math.random() * 10)];
-    password += '!@#$%^&*'[Math.floor(Math.random() * 8)];
-
-    // Completar el resto de la contraseña
-    for (let i = password.length; i < length; i++) {
-      password += charset[Math.floor(Math.random() * charset.length)];
-    }
-
-    // Mezclar los caracteres
-    return password
-      .split('')
-      .sort(() => Math.random() - 0.5)
-      .join('');
-  }
-
-  async onSubmit() {
+  async saveUser() {
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
       this._snackBarService.error('Por favor completa todos los campos requeridos.');
@@ -207,9 +193,9 @@ export class EditUserPanel implements OnInit {
 
   async createUser() {
     const formData = this.userForm.value;
-    const randomPassword = this.generateRandomPassword();
+    const randomPassword = this._ramdomPassword.generateRandomPassword();
 
-    // 1. Verificar si el email ya existe
+    // Verificar si el email ya existe
     const { data: existingProfile } = await this._supabaseClient
       .from('profile')
       .select('id')
@@ -220,37 +206,37 @@ export class EditUserPanel implements OnInit {
       throw new Error('Este correo ya está registrado.');
     }
 
-    // 2. Crear usuario en Supabase Auth
-    const { data: authData, error: authError } = await this._supabaseClient.auth.signUp({
+    // Crear usuario directamente en Supabase (sin enviar email de confirmación)
+    const { data, error } = await this._supabaseClient.auth.signUp({
       email: formData.email,
       password: randomPassword,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           fullName: formData.fullName,
-          email: formData.email,
+          username: formData.username,
           country: formData.country,
           phone: formData.phone,
         },
       },
     });
 
-    if (authError) throw authError;
-    if (!authData.user) throw new Error('No se pudo crear el usuario.');
+    if (error) throw error;
+    if (!data.user) throw new Error('No se pudo crear el usuario.');
 
-    // 3. Crear perfil en Supabase
+    // Crear perfil en la tabla profile
     const { error: profileError } = await this._supabaseClient.from('profile').insert({
-      id: authData.user.id,
-      email: formData.email,
+      id: data.user.id,
+      email: data.user.email,
       fullName: formData.fullName,
       username: formData.username,
       country: formData.country,
       phone: formData.phone,
       roleTypeId: formData.roleTypeId,
+      bibliography: formData.bibliography || '',
       created_at: new Date().toISOString(),
     });
 
-    if (profileError) throw profileError;
+    if (profileError) throw new Error('Error al crear el perfil: ' + profileError.message);
 
     this._snackBarService.success(
       `Usuario creado exitosamente. Contraseña temporal: ${randomPassword}`
@@ -260,27 +246,30 @@ export class EditUserPanel implements OnInit {
 
   async updateUser() {
     if (!this.userId) return;
-
     const formData = this.userForm.value;
 
-    // Actualizar perfil en Supabase
-    const { error } = await this._supabaseClient
-      .from('profile')
-      .update({
-        fullName: formData.fullName,
-        username: formData.username,
-        email: formData.email,
-        phone: formData.phone,
-        country: formData.country,
-        roleTypeId: formData.roleTypeId,
-        bibliography: formData.bibliography,
-      })
-      .eq('id', this.userId);
+    try {
+      const { error } = await this._supabaseClient
+        .from('profile')
+        .update({
+          fullName: formData.fullName,
+          username: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+          country: formData.country,
+          roleTypeId: formData.roleTypeId,
+          bibliography: formData.bibliography,
+        })
+        .eq('id', this.userId);
 
-    if (error) throw error;
+      if (error) throw error;
 
-    this._snackBarService.success('Usuario actualizado exitosamente.');
-    this._router.navigate(['/organizational/see-users']);
+      this._snackBarService.success('Usuario actualizado exitosamente.');
+      this._router.navigate(['/organizational/see-users']);
+    } catch (error: any) {
+      console.error('❌ Error al actualizar usuario:', error);
+      throw new Error(error.message || 'Error al actualizar el usuario.');
+    }
   }
 
   cancel() {

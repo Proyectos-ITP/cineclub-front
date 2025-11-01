@@ -36,7 +36,6 @@ export class SupabaseService {
         this.currentUser.next(session?.user ?? null);
 
         if (event === 'SIGNED_IN' && session?.user) {
-          // 🔹 Guardar tokens de sesión
           if (session.access_token && session.refresh_token) {
             localStorage.setItem('access_token', session.access_token);
             localStorage.setItem('refresh_token', session.refresh_token);
@@ -69,13 +68,11 @@ export class SupabaseService {
           }
         }
 
-        // 🔹 Si el token se refresca, actualizamos también en localStorage
         if (event === 'TOKEN_REFRESHED' && session) {
           localStorage.setItem('access_token', session.access_token);
           localStorage.setItem('refresh_token', session.refresh_token);
         }
 
-        // 🔹 Si el usuario cierra sesión, limpiamos
         if (event === 'SIGNED_OUT') {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');

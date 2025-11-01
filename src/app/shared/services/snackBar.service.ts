@@ -4,7 +4,7 @@ import { CustomSnackbarComponent } from '../components/custom-snackbar.component
 
 @Injectable({ providedIn: 'root' })
 export class SnackBarService {
-  private _snackBar = inject(MatSnackBar);
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
 
   success(message: string, duration = 4000) {
     this.show(message, 'success', duration);

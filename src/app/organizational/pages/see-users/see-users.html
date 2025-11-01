@@ -13,7 +13,7 @@
           Aquí puedes ver la lista de usuarios registrados en la plataforma
         </p>
       </div>
-      <div class="flex w-full md:w-full lg:w-[25%] 2xl:w-[25%] justify-end">
+      <div class="flex w-full md:w-full lg:w-[50%] justify-end">
         <button
           mat-fab
           extended
@@ -38,7 +38,7 @@
         mat-raised-button
         color="warn"
         [disabled]="!hasActiveFilters"
-        class="!bg-red-600 !text-white disabled:!bg-gray-400 disabled:!cursor-not-allowed w-full md:w-[25%]"
+        class="!bg-red-600 !text-white disabled:!bg-gray-400 disabled:!cursor-not-allowed w-full md:w-[50%]"
         (click)="clearFilters()"
       >
         Limpiar filtros
