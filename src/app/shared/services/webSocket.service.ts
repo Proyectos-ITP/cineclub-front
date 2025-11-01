@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import SockJS from 'sockjs-client';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
+import { environment } from '../../../environments/environment';
 
 export interface FriendRequestNotification {
   id: string;
@@ -47,7 +48,7 @@ export class WebSocketService {
       return;
     }
 
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS(`${environment.backendUrl}ws`);
 
     this.stompClient = new Client({
       webSocketFactory: () => socket,
