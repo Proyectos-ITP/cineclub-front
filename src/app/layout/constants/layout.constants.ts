@@ -42,6 +42,11 @@ export const SIDEBAR_ITEMS: SideBarItem[] = [
         title: 'Mejores reseñas',
         route: '/movies/top-rated',
       },
+      {
+        icon: 'book_ribbon',
+        title: 'Biblioteca',
+        route: '/movies/library',
+      },
     ],
   },
   {
