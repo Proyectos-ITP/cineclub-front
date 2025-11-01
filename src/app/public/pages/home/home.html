@@ -1,8 +1,16 @@
 @if (!isLoggedIn) {
 <app-home-logout></app-home-logout>
 } @else {
-<div class="brand-content-center flex flex-col items-center justify-center">
-  <span class="text-black text-5xl font-bold mb-8">Bienvenido</span>
+<div class="text-black flex flex-col items-center justify-center text-center px-6 py-12">
+  <span class="text-6xl sm:text-7xl font-extrabold mb-8 text-purple-700 drop-shadow-md">
+    Bienvenido
+  </span>
+  <h1
+    class="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-semibold mb-8 leading-relaxed max-w-4xl"
+  >
+    🚀 ¡Hola! Tu próxima historia favorita te está esperando. Explora películas y libros que podrían
+    encantarte — déjate sorprender. 🎬📘
+  </h1>
   <app-movies-card-home></app-movies-card-home>
 </div>
 }

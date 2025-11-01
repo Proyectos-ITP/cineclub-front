@@ -33,7 +33,6 @@ export class MoviesService {
     }>(`${environment.backendUrl}movies`, {
       params,
       headers,
-      responseType: 'json',
     });
   }
 }
