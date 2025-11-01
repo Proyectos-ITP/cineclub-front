@@ -1,5 +1,8 @@
-@if(!isLoggedIn) { <app-home-logout></app-home-logout> } @else {
-<div class="brand-content-center">
-  <span class="text-black text-5xl font-bold"> Bienvenido</span>
+@if (!isLoggedIn) {
+<app-home-logout></app-home-logout>
+} @else {
+<div class="brand-content-center flex flex-col items-center justify-center">
+  <span class="text-black text-5xl font-bold mb-8">Bienvenido</span>
+  <app-movies-card-home></app-movies-card-home>
 </div>
 }

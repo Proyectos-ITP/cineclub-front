@@ -1,0 +1,53 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Card principal que encierra todas las películas -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+    <!-- Encabezado -->
+    <div class="border-b border-gray-300 px-6 py-3 flex items-center justify-between bg-gray-50">
+      <h2 class="text-2xl font-semibold text-purple-700 flex items-center gap-2">
+        <span class="material-icons text-purple-700">movie</span>
+        Películas
+      </h2>
+    </div>
+
+    <!-- Contenido de las películas -->
+    <div class="p-6 flex flex-col gap-6">
+      @for (movie of movies; track $index) {
+      <div
+        class="bg-gray-50 flex flex-col sm:flex-row items-center rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200"
+      >
+        <!-- Imagen -->
+        <div class="w-full sm:w-40 h-60 sm:h-48 flex-shrink-0 overflow-hidden">
+          <img
+            [src]="'https://image.tmdb.org/t/p/w500' + movie.posterPath"
+            alt="{{ movie.title }}"
+            class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+            (error)="$event.target.src = 'assets/images/no-image.png'"
+          />
+        </div>
+
+        <!-- Texto -->
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-1">
+              {{ movie.title }}
+            </h3>
+            <p class="text-gray-500 text-sm mb-2">{{ movie.director }}</p>
+            <p class="text-gray-700 text-sm leading-relaxed line-clamp-3">
+              {{ movie.overview }}
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between mt-4 text-gray-600 text-sm">
+            <div class="flex items-center gap-3">
+              <span>🕒 {{ movie.runtime }} min</span>
+              <span>📅 {{ movie.releaseDate | date : 'yyyy' }}</span>
+            </div>
+            <span class="text-yellow-500 text-lg">★★★★★</span>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
