@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FriendRequestInterface,
   FriendRequestResponse,
@@ -6,10 +6,11 @@ import {
 import { FriendRequestService } from '../../../shared/services/friend-request.service';
 import { UserService } from '../../../shared/services/user.service';
 import { MatIconModule } from '@angular/material/icon';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject, takeUntil } from 'rxjs';
 import { UserMongoComplete } from '../../../auth/interfaces/user.interface';
 import { FriendRequestStatusPipe } from '../../../shared/pipes/friend-request-status.pipe';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { WebSocketService } from '../../../shared/services/webSocket.service';
 
 @Component({
   selector: 'app-friend-requests',
@@ -18,10 +19,12 @@ import { SnackBarService } from '../../../shared/services/snackBar.service';
   templateUrl: './friend-requests.html',
   styleUrl: './friend-requests.scss',
 })
-export class FriendRequests implements OnInit {
+export class FriendRequests implements OnInit, OnDestroy {
   private readonly _friendRequestService: FriendRequestService = inject(FriendRequestService);
   private readonly _userService: UserService = inject(UserService);
   private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private webSocketService: WebSocketService = inject(WebSocketService);
+  private destroy$ = new Subject<void>();
 
   sentRequests: (FriendRequestInterface & { user?: UserMongoComplete })[] = [];
   receivedRequests: (FriendRequestInterface & { user?: UserMongoComplete })[] = [];
@@ -32,6 +35,24 @@ export class FriendRequests implements OnInit {
   ngOnInit(): void {
     this.loadSentRequests();
     this.loadReceivedRequests();
+    this.webSocketService.friendRequests$.pipe(takeUntil(this.destroy$)).subscribe((requests) => {
+      if (requests.length > 0) {
+        const lastRequest = requests[0];
+        const request: FriendRequestInterface = {
+          id: lastRequest.id,
+          senderId: lastRequest.senderId,
+          receiverId: lastRequest.receiverId,
+          status: 'PENDING',
+          createdAt: new Date().toString(),
+        };
+        this.receivedRequests.push(request);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadSentRequests(): void {

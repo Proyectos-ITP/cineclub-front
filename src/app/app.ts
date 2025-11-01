@@ -50,14 +50,6 @@ export class App implements OnDestroy, OnInit {
               console.log(lastRequest);
             }
           });
-
-        this.webSocketService.friendRequestAccepted$
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((notification) => {
-            if (notification) {
-              console.log(notification);
-            }
-          });
       }
     }
   }
