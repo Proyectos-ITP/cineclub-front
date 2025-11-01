@@ -212,6 +212,12 @@ export class SeeUsers implements OnInit {
       const { error } = await this._supabaseClient.from('profile').delete().eq('id', id);
 
       if (error) throw error;
+      this._userAdminService.deleteUserPanel(id).subscribe({
+        error: (error) => {
+          console.error('❌ Error al eliminar usuario en backend:', error);
+          this._snackBarService.error('No se pudo eliminar el usuario en el backend.');
+        },
+      });
 
       this._snackBarService.success('Usuario eliminado correctamente.');
       await this.loadUsers();

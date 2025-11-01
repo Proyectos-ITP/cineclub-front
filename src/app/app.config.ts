@@ -1,4 +1,9 @@
-import { ApplicationConfig, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  LOCALE_ID,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   MAT_DATE_LOCALE,
@@ -9,11 +14,13 @@ import { routes } from './app.routes';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from './supabaseClient';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { getMaterialPaginatorTranslations } from './shared/utilities/material-paginator-translations';
+import { ToastrModule } from 'ngx-toastr';
+import { authInterceptor } from './shared/interceptors/auth.interceptor';
 
 registerLocaleData(localeEs);
 
@@ -22,7 +29,12 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideNativeDateAdapter(MAT_NATIVE_DATE_FORMATS),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    importProvidersFrom(
+      ToastrModule.forRoot({
+        preventDuplicates: true,
+      })
+    ),
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: { maxWidth: '700px', width: '95vw', padding: '40px' },
