@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { supabase } from '../../supabaseClient';
 import { UnifiedSession } from '../interfaces/session.interface';
 
@@ -7,6 +8,14 @@ import { UnifiedSession } from '../interfaces/session.interface';
 })
 export class TokenService {
   private readonly SESSION_KEY = 'app_session';
+
+  // BehaviorSubject para emitir cambios en la sesión
+  private readonly _sessionSubject = new BehaviorSubject<UnifiedSession | null>(this.getSession());
+  public session$ = this._sessionSubject.asObservable();
+
+  // BehaviorSubject para emitir cambios en el rol del usuario
+  private readonly _userRoleSubject = new BehaviorSubject<string | null>(this.getUserRole());
+  public userRole$ = this._userRoleSubject.asObservable();
 
   saveSession(accessToken: string, refreshToken: string, userData: UnifiedSession['user']): void {
     if (!accessToken || !refreshToken || !userData) {
@@ -21,6 +30,10 @@ export class TokenService {
     };
 
     localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
+
+    // Notificar a los suscriptores sobre los cambios
+    this._sessionSubject.next(session);
+    this._userRoleSubject.next(userData?.roleType?.code ?? null);
   }
 
   getSession(): UnifiedSession | null {
@@ -72,6 +85,10 @@ export class TokenService {
 
   clearSession(): void {
     localStorage.removeItem(this.SESSION_KEY);
+
+    // Notificar a los suscriptores que la sesión fue eliminada
+    this._sessionSubject.next(null);
+    this._userRoleSubject.next(null);
   }
 
   async refreshSession(): Promise<UnifiedSession | null> {
@@ -109,5 +126,6 @@ export class TokenService {
     }
 
     this.saveSession(currentSession.access_token, currentSession.refresh_token, userData);
+    // saveSession ya notifica a los suscriptores
   }
 }

@@ -1,20 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, inject, computed, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  inject,
+  computed,
+  signal,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { SIDEBAR_ITEMS } from '../../constants/layout.constants';
 import { RouterLink } from '@angular/router';
 import { SignInService } from '../../../auth/services/signIn.service';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { TokenService } from '../../../auth/services/token.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-side-bar',
   standalone: true,
-  imports: [CommonModule, MatIconModule, RouterLink],
+  imports: [CommonModule, MatIconModule, RouterLink, LoaderComponent],
   templateUrl: './side-bar.html',
   styleUrls: ['./side-bar.scss'],
 })
-export class SideBar {
+export class SideBar implements OnInit, OnDestroy {
   @Input() closeSideBar: boolean = false;
   @Output() collapsed: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -25,23 +37,37 @@ export class SideBar {
   private readonly _singInService: SignInService = inject(SignInService);
   private readonly _snackBarService: SnackBarService = inject(SnackBarService);
   private readonly _tokenService: TokenService = inject(TokenService);
+  private _roleSubscription?: Subscription;
 
-  // Signal que contiene el rol del usuario actual
   private userRole = signal<string | null>(this._tokenService.getUserRole());
 
-  // Computed que filtra los items del menú según el rol del usuario
+  // Signal para controlar el estado de carga
+  isLoading = signal<boolean>(!this._tokenService.getUserRole());
+
   menuItems = computed(() => {
     const role = this.userRole();
     if (!role) return [];
 
     return SIDEBAR_ITEMS.filter((item) => {
-      // Si el item no tiene roles definidos, es visible para todos
       if (!item.roles || item.roles.length === 0) return true;
 
-      // Si el item tiene roles definidos, verificar si el usuario tiene uno de esos roles
       return item.roles.includes(role);
     });
   });
+
+  ngOnInit(): void {
+    this._roleSubscription = this._tokenService.userRole$.subscribe((role) => {
+      this.userRole.set(role);
+      // Cuando se recibe un rol, desactivar el loader
+      if (role) {
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this._roleSubscription?.unsubscribe();
+  }
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
