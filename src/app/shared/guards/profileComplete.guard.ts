@@ -13,7 +13,6 @@ export const profileCompleteGuard = () => {
   const userRole = tokenService.getUserRole();
 
   if (!userRole || userRole === '') {
-    console.log('🚫 profileCompleteGuard: Perfil incompleto, redirigiendo a completar perfil');
     return router.createUrlTree(['/profile/register-profile']);
   }
 

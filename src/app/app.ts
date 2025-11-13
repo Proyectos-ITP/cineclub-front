@@ -31,7 +31,6 @@ export class App implements OnDestroy, OnInit {
       const session: any = JSON.parse(localStorage.getItem('app_session') || '{}');
       const userId = session['user']?.['id'];
 
-      console.log(userId);
       if (userId) {
         this.webSocketService.connect(userId, session['access_token']);
 
@@ -39,7 +38,6 @@ export class App implements OnDestroy, OnInit {
           .pipe(takeUntil(this.destroy$))
           .subscribe((connected) => {
             this.isConnectedWs = connected;
-            console.log('Estado de conexión:', connected ? '🟢 Conectado' : '🔴 Desconectado');
           });
 
         this.webSocketService.friendRequests$

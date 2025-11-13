@@ -74,8 +74,6 @@ export class SignInService {
         .maybeSingle();
 
       if (!profile?.fullName || !profile?.country || !profile?.phone) {
-        console.log('🔵 Perfil incompleto - redirigiendo a completar perfil');
-
         const minimalUser = {
           id: data.user.id,
           roleTypeId: '',
@@ -156,8 +154,6 @@ export class SignInService {
               .maybeSingle();
 
             if (!profile?.fullName || !profile?.country || !profile?.phone) {
-              console.log('🔵 Perfil incompleto - redirigiendo a completar perfil');
-
               const minimalUser = {
                 id: user.id,
                 roleTypeId: '',
@@ -176,7 +172,6 @@ export class SignInService {
               return;
             }
 
-            console.log('🔵 Perfil completo - obteniendo rol');
             const userWithRole = await this.getUserWithRole(user.id);
 
             this._tokenService.saveSession(access_token, refresh_token, userWithRole);
