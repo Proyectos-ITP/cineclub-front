@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { AuthCard } from '../../../auth/components/auth-card/auth-card';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -12,8 +12,11 @@ import { HttpClient } from '@angular/common/http';
 import { Country } from '../../../auth/interfaces/country.interface';
 import { SupabaseService } from '../../../auth/services/supabase.service';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { TokenService } from '../../../auth/services/token.service';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-register-profile',
@@ -31,7 +34,7 @@ import { ProfileService } from '../../services/profile.service';
   templateUrl: './register-profile.html',
   styleUrl: './register-profile.scss',
 })
-export class RegisterProfile implements OnInit {
+export class RegisterProfile implements OnInit, OnDestroy {
   complementInfo: FormGroup;
   filteredCountries: Observable<string[]> = new Observable();
   countries: string[] = [];
@@ -43,6 +46,11 @@ export class RegisterProfile implements OnInit {
   private readonly _http: HttpClient = inject(HttpClient);
   private readonly _fb: FormBuilder = inject(FormBuilder);
   private readonly _router: Router = inject(Router);
+  private readonly _tokenService: TokenService = inject(TokenService);
+  private readonly _supabaseClient = inject(SupabaseClient);
+  private readonly _location: Location = inject(Location);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private navigationSubscription?: any;
 
   constructor() {
     this.complementInfo = this._fb.group({
@@ -56,6 +64,17 @@ export class RegisterProfile implements OnInit {
   }
 
   ngOnInit() {
+    history.pushState(null, '', location.href);
+
+    this.navigationSubscription = this._router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        if (event.navigationTrigger === 'popstate') {
+          this._snackBarService.info('Debes completar tu perfil antes de continuar');
+          history.pushState(null, '', location.href);
+        }
+      }
+    });
+
     this._http
       .get<Country[]>('https://restcountries.com/v3.1/all?fields=name')
       .pipe(
@@ -69,6 +88,12 @@ export class RegisterProfile implements OnInit {
           map((value) => this._filterCountries(value || ''))
         );
       });
+  }
+
+  ngOnDestroy() {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
   }
 
   private _filterCountries(value: string): string[] {
@@ -107,8 +132,48 @@ export class RegisterProfile implements OnInit {
 
       await this._profileService.updateProfile(user.id, profileData);
 
+      const { data: userWithRole, error: roleError } = await this._supabaseClient
+        .from('profile')
+        .select(
+          `
+          id,
+          roleTypeId,
+          roleType:roleType!fk_profile_roletype (
+            id,
+            code,
+            name
+          )
+        `
+        )
+        .eq('id', user.id)
+        .single();
+
+      if (roleError || !userWithRole) {
+        console.error('❌ Error obteniendo rol:', roleError);
+        throw new Error('No se pudo obtener el rol del usuario');
+      }
+
+      const transformedUser = {
+        ...userWithRole,
+        roleType: Array.isArray(userWithRole.roleType)
+          ? userWithRole.roleType[0]
+          : userWithRole.roleType,
+      };
+
+      const currentSession = this._tokenService.getSession();
+      if (currentSession) {
+        this._tokenService.saveSession(
+          currentSession.access_token,
+          currentSession.refresh_token,
+          transformedUser
+        );
+      }
+
       this._snackBarService.success('¡Perfil completado exitosamente!');
-      this._router.navigate(['/profile/user-profile']);
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      this._router.navigate(['/']);
     } catch (error) {
       console.error('Error guardando perfil:', error);
       this._snackBarService.error('Error al guardar el perfil. Inténtalo de nuevo.');

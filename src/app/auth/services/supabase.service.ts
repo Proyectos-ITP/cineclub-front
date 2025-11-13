@@ -36,11 +36,6 @@ export class SupabaseService {
         this.currentUser.next(session?.user ?? null);
 
         if (event === 'SIGNED_IN' && session?.user) {
-          if (session.access_token && session.refresh_token) {
-            localStorage.setItem('access_token', session.access_token);
-            localStorage.setItem('refresh_token', session.refresh_token);
-          }
-
           const pendingUserData = localStorage.getItem('pendingUserData');
           if (pendingUserData) {
             try {
@@ -66,16 +61,6 @@ export class SupabaseService {
               console.error('Error procesando pendingUserData:', err);
             }
           }
-        }
-
-        if (event === 'TOKEN_REFRESHED' && session) {
-          localStorage.setItem('access_token', session.access_token);
-          localStorage.setItem('refresh_token', session.refresh_token);
-        }
-
-        if (event === 'SIGNED_OUT') {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
         }
 
         if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {

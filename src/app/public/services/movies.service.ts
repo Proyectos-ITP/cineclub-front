@@ -22,7 +22,6 @@ export class MoviesService {
     return headers;
   }
 
-  // 🔹 Obtener películas con paginación
   getMoviesWithPagination(query: object): Observable<{
     pagination: PaginationInterface;
     data: MoviesInterface[];
@@ -38,17 +37,16 @@ export class MoviesService {
     });
   }
 
-  // 🔹 Guardar película en la colección del usuario
   saveMovieToCollection(movieId: string): Observable<any> {
     return this._httpClient.post(`${environment.backendUrl}collections`, { movieId });
   }
-  // 🔹 Eliminar una película guardada de la colección
+
   deleteSavedMovie(movieId: string): Observable<any> {
     return this._httpClient.delete(`${environment.backendUrl}collections/${movieId}`, {
       headers: this.headers,
     });
   }
-  // 🔹 Obtener películas guardadas por el usuario
+
   getSavedMovies(): Observable<any> {
     return this._httpClient.get(`${environment.backendUrl}collections`, {
       headers: this.headers,

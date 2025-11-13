@@ -10,6 +10,7 @@ import { Notification } from '../../components/notification/notification';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { TokenService } from '../../../auth/services/token.service';
 
 @Component({
   selector: 'app-default-layout',
@@ -29,9 +30,11 @@ import { CommonModule } from '@angular/common';
 })
 export class DefaultLayout implements OnInit, OnDestroy {
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
+  private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _router: Router = inject(Router);
   private sub?: Subscription;
   private initSub?: Subscription;
+  private roleSub?: Subscription;
 
   showSidebar: boolean = true;
   isReady: boolean = false;
@@ -39,8 +42,13 @@ export class DefaultLayout implements OnInit, OnDestroy {
   isInitializing: boolean = true;
   showNotifications: boolean = false;
   isClosingNotifications: boolean = false;
+  hasValidRole: boolean = false;
 
   constructor() {
+    this.roleSub = this._tokenService.userRole$.subscribe((role) => {
+      this.hasValidRole = !!role && role !== '';
+    });
+
     this._router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
@@ -86,6 +94,7 @@ export class DefaultLayout implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.sub?.unsubscribe();
     this.initSub?.unsubscribe();
+    this.roleSub?.unsubscribe();
   }
 
   toggleNotifications(): void {
@@ -102,6 +111,6 @@ export class DefaultLayout implements OnInit, OnDestroy {
     setTimeout(() => {
       this.showNotifications = false;
       this.isClosingNotifications = false;
-    }, 300); // Duración de la animación
+    }, 300);
   }
 }

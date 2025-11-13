@@ -32,6 +32,16 @@ export class SignInService {
       .eq('id', userId)
       .single();
 
+    if (response.error) {
+      console.error('❌ Error obteniendo usuario con rol:', response.error);
+      throw new Error('No se pudo obtener la información del usuario');
+    }
+
+    if (!response.data) {
+      console.error('❌ No se encontró el usuario en la tabla profile');
+      throw new Error('Usuario no encontrado');
+    }
+
     const transformedData = {
       ...response.data,
       roleType: Array.isArray(response.data?.roleType)
@@ -57,26 +67,47 @@ export class SignInService {
 
       if (!data.session || !data.user) throw new Error('No se pudo iniciar sesión correctamente.');
 
+      const { data: profile } = await this._supabaseClient
+        .from('profile')
+        .select('fullName, country, phone, roleTypeId')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (!profile?.fullName || !profile?.country || !profile?.phone) {
+        console.log('🔵 Perfil incompleto - redirigiendo a completar perfil');
+
+        const minimalUser = {
+          id: data.user.id,
+          roleTypeId: '',
+          roleType: {
+            id: '',
+            code: '',
+            name: '',
+          },
+        };
+
+        this._tokenService.saveSession(
+          data.session.access_token,
+          data.session.refresh_token,
+          minimalUser
+        );
+
+        await this._router.navigate(['/profile/register-profile']);
+        this._snackBarService.info('Completa tu perfil antes de continuar.');
+        return { ...data, userWithRole: minimalUser };
+      }
+
       const userWithRole = await this.getUserWithRole(data.user.id);
+
       this._tokenService.saveSession(
         data.session.access_token,
         data.session.refresh_token,
         userWithRole
       );
 
-      const { data: profile } = await this._supabaseClient
-        .from('profile')
-        .select('fullName, country, phone')
-        .eq('id', data.user.id)
-        .maybeSingle();
-
-      if (!profile?.fullName || !profile?.country || !profile?.phone) {
-        this._router.navigate(['/profile/register-profile']);
-        this._snackBarService.info('Completa tu perfil antes de continuar.');
-      } else {
-        this._router.navigate(['/']);
-        this._snackBarService.success('¡Bienvenido de nuevo!');
-      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await this._router.navigate(['/']);
+      this._snackBarService.success('¡Bienvenido de nuevo!');
 
       return { ...data, userWithRole };
     } catch (error: any) {
@@ -118,23 +149,41 @@ export class SignInService {
               refresh_token: sessionData.session.refresh_token,
             };
 
-            const userWithRole = await this.getUserWithRole(user.id);
-
-            this._tokenService.saveSession(access_token, refresh_token, userWithRole);
-
             const { data: profile } = await this._supabaseClient
               .from('profile')
-              .select('fullName, country, phone')
+              .select('fullName, country, phone, roleTypeId')
               .eq('id', user.id)
               .maybeSingle();
 
             if (!profile?.fullName || !profile?.country || !profile?.phone) {
-              this._router.navigate(['/profile/register-profile']);
+              console.log('🔵 Perfil incompleto - redirigiendo a completar perfil');
+
+              const minimalUser = {
+                id: user.id,
+                roleTypeId: '',
+                roleType: {
+                  id: '',
+                  code: '',
+                  name: '',
+                },
+              };
+
+              this._tokenService.saveSession(access_token, refresh_token, minimalUser);
+
+              await this._router.navigate(['/profile/register-profile']);
               this._snackBarService.info('Completa tu perfil antes de continuar.');
-            } else {
-              this._router.navigate(['/']);
-              this._snackBarService.success('¡Bienvenido de nuevo!');
+              resolve(sessionData.session);
+              return;
             }
+
+            console.log('🔵 Perfil completo - obteniendo rol');
+            const userWithRole = await this.getUserWithRole(user.id);
+
+            this._tokenService.saveSession(access_token, refresh_token, userWithRole);
+
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            await this._router.navigate(['/']);
+            this._snackBarService.success('¡Bienvenido de nuevo!');
 
             resolve(sessionData.session);
           }

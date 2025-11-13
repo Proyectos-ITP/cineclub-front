@@ -11,11 +11,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const notificationsService = inject(NotificationsService);
   const router = inject(Router);
 
-  // Solo agregar el token si la petición va al backend
   if (req.url.startsWith(environment.backendUrl)) {
     const token = tokenService.getAccessToken();
 
-    // Si hay token, clonamos la petición y agregamos el header Authorization
     if (token) {
       req = req.clone({
         setHeaders: {
@@ -25,12 +23,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
 
-  // Manejamos los errores de autenticación y autorización
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       switch (err.status) {
         case 401:
-          // Token inválido o expirado - limpiar y redirigir al login
           tokenService.clearSession();
           router.navigate(['/auth/login']);
           notificationsService.showNotification(
