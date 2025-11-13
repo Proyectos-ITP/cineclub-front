@@ -22,7 +22,6 @@ export class MoviesContent implements OnInit {
     this.loadSavedMovies();
   }
 
-  // 🔹 Cargar películas disponibles
   loadMovies() {
     this.loading = true;
     this.moviesService.getMoviesWithPagination({ page: 1, size: 10 }).subscribe({
@@ -37,11 +36,10 @@ export class MoviesContent implements OnInit {
     });
   }
 
-  // 🔹 Cargar películas guardadas desde la API
   loadSavedMovies() {
     this.moviesService.getSavedMovies().subscribe({
       next: (res) => {
-        this.savedMovies = res.data || res; // depende del formato de la API
+        this.savedMovies = res.data || res;
       },
       error: (err) => {
         console.error('Error al obtener las películas guardadas:', err);
@@ -49,7 +47,6 @@ export class MoviesContent implements OnInit {
     });
   }
 
-  // 🔹 Guardar película en la API
   saveMovie(movieId: string) {
     this.moviesService.saveMovieToCollection(movieId).subscribe({
       next: () => {
@@ -63,7 +60,6 @@ export class MoviesContent implements OnInit {
     });
   }
 
-  // 🔹 Verificar si la película ya está guardada
   isSaved(movieId: string): boolean {
     return this.savedMovies.some((m) => m.movieId === movieId);
   }

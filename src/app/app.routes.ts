@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { DefaultLayout } from './layout/pages/default-layout/default-layout';
-import { noAuthGuard } from './shared/guards/noAuth.guard';
 import { authGuard } from './shared/guards/auth.guard';
+import { profileCompleteGuard } from './shared/guards/profileComplete.guard';
 
 export const routes: Routes = [
   {
@@ -16,6 +16,7 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./public/public.routes').then((m) => m.publicRoutes),
+        canActivate: [profileCompleteGuard],
       },
       {
         path: 'auth',
@@ -30,7 +31,7 @@ export const routes: Routes = [
         path: 'organizational',
         loadChildren: () =>
           import('./organizational/organizational.routes').then((m) => m.organizationalRoutes),
-        canActivate: [authGuard],
+        canActivate: [authGuard, profileCompleteGuard],
       },
     ],
   },

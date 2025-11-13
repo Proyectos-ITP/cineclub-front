@@ -16,7 +16,7 @@
       <router-outlet></router-outlet>
     </main>
   </div>
-  } @else { @if (showSidebar) {
+  } @else { @if (showSidebar && hasValidRole) {
   <app-side-bar></app-side-bar>
   }
   <div class="app-container w-full animate-fade-in">

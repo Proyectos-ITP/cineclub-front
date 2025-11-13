@@ -195,7 +195,6 @@ export class EditUserPanel implements OnInit {
     const formData = this.userForm.value;
     const randomPassword = this._ramdomPassword.generateRandomPassword();
 
-    // Verificar si el email ya existe
     const { data: existingProfile } = await this._supabaseClient
       .from('profile')
       .select('id')
@@ -206,7 +205,6 @@ export class EditUserPanel implements OnInit {
       throw new Error('Este correo ya está registrado.');
     }
 
-    // Crear usuario directamente en Supabase (sin enviar email de confirmación)
     const { data, error } = await this._supabaseClient.auth.signUp({
       email: formData.email,
       password: randomPassword,
@@ -223,7 +221,6 @@ export class EditUserPanel implements OnInit {
     if (error) throw error;
     if (!data.user) throw new Error('No se pudo crear el usuario.');
 
-    // Crear perfil en la tabla profile
     const { error: profileError } = await this._supabaseClient.from('profile').insert({
       id: data.user.id,
       email: data.user.email,

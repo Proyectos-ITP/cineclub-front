@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 import { supabase } from '../../supabaseClient';
 import { UnifiedSession } from '../interfaces/session.interface';
 
@@ -8,16 +9,22 @@ import { UnifiedSession } from '../interfaces/session.interface';
 })
 export class TokenService {
   private readonly SESSION_KEY = 'app_session';
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  // BehaviorSubject para emitir cambios en la sesión
-  private readonly _sessionSubject = new BehaviorSubject<UnifiedSession | null>(this.getSession());
+  private readonly _sessionSubject = new BehaviorSubject<UnifiedSession | null>(
+    this.isBrowser ? this.getSession() : null
+  );
   public session$ = this._sessionSubject.asObservable();
 
-  // BehaviorSubject para emitir cambios en el rol del usuario
-  private readonly _userRoleSubject = new BehaviorSubject<string | null>(this.getUserRole());
+  private readonly _userRoleSubject = new BehaviorSubject<string | null>(
+    this.isBrowser ? this.getUserRole() : null
+  );
   public userRole$ = this._userRoleSubject.asObservable();
 
   saveSession(accessToken: string, refreshToken: string, userData: UnifiedSession['user']): void {
+    if (!this.isBrowser) return;
+
     if (!accessToken || !refreshToken || !userData) {
       console.warn('⚠️ No se puede guardar sesión: faltan datos');
       return;
@@ -31,12 +38,15 @@ export class TokenService {
 
     localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
 
-    // Notificar a los suscriptores sobre los cambios
+    console.log('💾 Sesión guardada con rol:', userData?.roleType?.code || '(sin rol)');
+
     this._sessionSubject.next(session);
     this._userRoleSubject.next(userData?.roleType?.code ?? null);
   }
 
   getSession(): UnifiedSession | null {
+    if (!this.isBrowser) return null;
+
     const sessionStr = localStorage.getItem(this.SESSION_KEY);
     if (!sessionStr) return null;
 
@@ -69,12 +79,10 @@ export class TokenService {
     return this.getSession()?.user ?? null;
   }
 
-  /** ✅ NUEVO: obtener solo el id del usuario */
   getUserId(): string | null {
     return this.getUserData()?.id ?? null;
   }
 
-  /** ✅ NUEVO: obtener el código del rol del usuario */
   getUserRole(): string | null {
     return this.getUserData()?.roleType?.code ?? null;
   }
@@ -84,9 +92,10 @@ export class TokenService {
   }
 
   clearSession(): void {
+    if (!this.isBrowser) return;
+
     localStorage.removeItem(this.SESSION_KEY);
 
-    // Notificar a los suscriptores que la sesión fue eliminada
     this._sessionSubject.next(null);
     this._userRoleSubject.next(null);
   }
@@ -119,6 +128,8 @@ export class TokenService {
   }
 
   updateUserData(userData: UnifiedSession['user']): void {
+    if (!this.isBrowser) return;
+
     const currentSession = this.getSession();
     if (!currentSession) {
       console.warn('⚠️ No hay sesión activa para actualizar datos de usuario');
@@ -126,6 +137,5 @@ export class TokenService {
     }
 
     this.saveSession(currentSession.access_token, currentSession.refresh_token, userData);
-    // saveSession ya notifica a los suscriptores
   }
 }

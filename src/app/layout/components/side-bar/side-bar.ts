@@ -39,14 +39,14 @@ export class SideBar implements OnInit, OnDestroy {
   private readonly _tokenService: TokenService = inject(TokenService);
   private _roleSubscription?: Subscription;
 
-  private userRole = signal<string | null>(this._tokenService.getUserRole());
+  private userRole = signal<string | null>(null);
 
-  // Signal para controlar el estado de carga
-  isLoading = signal<boolean>(!this._tokenService.getUserRole());
+  isLoading = signal<boolean>(true);
 
   menuItems = computed(() => {
     const role = this.userRole();
-    if (!role) return [];
+
+    if (!role || role === '') return [];
 
     return SIDEBAR_ITEMS.filter((item) => {
       if (!item.roles || item.roles.length === 0) return true;
@@ -56,12 +56,19 @@ export class SideBar implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    const currentRole = this._tokenService.getUserRole();
+    console.log('🎨 Sidebar ngOnInit - rol actual:', currentRole);
+
+    if (currentRole !== null) {
+      this.userRole.set(currentRole);
+      this.isLoading.set(false);
+    }
+
     this._roleSubscription = this._tokenService.userRole$.subscribe((role) => {
+      console.log('🎨 Sidebar recibió cambio de rol:', role);
       this.userRole.set(role);
-      // Cuando se recibe un rol, desactivar el loader
-      if (role) {
-        this.isLoading.set(false);
-      }
+
+      this.isLoading.set(false);
     });
   }
 

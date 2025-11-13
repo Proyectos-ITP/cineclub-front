@@ -11,7 +11,7 @@ import { HttpUtilitiesService } from '../../shared/utilities/http-utilities.serv
 import { ApiResponseInterface } from '../../shared/interfaces/api-response.interface';
 import { Router } from '@angular/router';
 
-import { LocalStorageService } from '../../shared/services/localStorage.service';
+import { TokenService } from './token.service';
 import { UserInterface } from '../interfaces/user.interface';
 import { LogOutInterface } from '../interfaces/logout.interface';
 
@@ -19,8 +19,7 @@ import { LogOutInterface } from '../interfaces/logout.interface';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly _tokensStorageKey: string = '_sessionData';
-  private readonly _localStorageService: LocalStorageService = inject(LocalStorageService);
+  private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _httpClient: HttpClient = inject(HttpClient);
   private readonly _httpUtilities: HttpUtilitiesService = inject(HttpUtilitiesService);
   private _refreshingToken: boolean = false;
@@ -71,18 +70,19 @@ export class AuthService {
   /**
    * @param saveLocalUserData - Servicio para guardar al usuario en el localStorage,
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   saveLocalUserData(userData: LoginSuccessInterface): void {
-    localStorage.setItem(this._tokensStorageKey, JSON.stringify(userData));
+    console.warn('⚠️ saveLocalUserData está deprecated, use TokenService.saveSession en su lugar');
   }
 
   /**
-   * @param saveLocalUserData - Servicio cerrar sesión,
+   * @param logout - Servicio cerrar sesión,
    */
   logout(data: LogOutInterface): Observable<unknown> {
     const params = this._httpUtilities.httpParamsFromObject(data);
     return this._httpClient.post<unknown>(`${environment.backendUrl}auth/sign-out`, params).pipe(
       tap(() => {
-        this._localStorageService.cleanLocalStorage();
+        this._tokenService.clearSession();
         this._isLoggedSubject.next(false);
         this._router.navigateByUrl('/auth/login');
       })
@@ -90,8 +90,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const userData = this._localStorageService.getAllSessionData();
-    return !!userData && !!userData.tokens.accessToken;
+    return this._tokenService.isLoggedIn();
   }
 
   isAuthenticatedToGuard() {
@@ -100,11 +99,11 @@ export class AuthService {
   }
 
   getAuthToken(): string | undefined {
-    return this._localStorageService.getAllSessionData()?.tokens?.accessToken;
+    return this._tokenService.getAccessToken() || undefined;
   }
 
   getRefreshToken(): string | undefined {
-    return this._localStorageService.getAllSessionData()?.tokens?.refreshToken;
+    return this._tokenService.getRefreshToken() || undefined;
   }
 
   set setRefreshingToken(status: boolean) {
@@ -140,41 +139,56 @@ export class AuthService {
   }
 
   private _updateAccessToken(accessToken: string): void {
-    const user: LoginSuccessInterface | null = this._localStorageService.getAllSessionData();
+    const session = this._tokenService.getSession();
 
-    if (user) {
-      user.tokens.accessToken = accessToken;
-      localStorage.setItem(this._tokensStorageKey, JSON.stringify(user));
+    if (session) {
+      this._tokenService.saveSession(accessToken, session.refresh_token, session.user);
     }
   }
 
   cleanStorageAndRedirectToLogin(): void {
-    this._localStorageService.cleanLocalStorage();
+    this._tokenService.clearSession();
     this._isLoggedEmit();
 
     this._router.navigate([`auth/login`]);
   }
 
   getUserLoggedIn(): UserInterface {
-    return this._localStorageService.getUserData();
+    const userData = this._tokenService.getUserData();
+
+    return {
+      id: userData?.id || '',
+      fullName: '',
+      country: '',
+      phone: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    };
   }
 
   setRedirectUrl(url: string): void {
-    this._localStorageService.setRedirectUrl(url);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('redirectUrl', url);
+    }
   }
 
   getRedirectUrl(): string | null {
-    return this._localStorageService.getRedirectUrl();
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('redirectUrl');
+    }
+    return null;
   }
 
   cleanRedirectUrl(): void {
-    this._localStorageService.cleanRedirectUrl();
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('redirectUrl');
+    }
   }
 
   getCurrentUserId(): string | null {
     try {
-      const userData = this._localStorageService.getAllSessionData();
-      return userData?.user?.userId || null;
+      return this._tokenService.getUserId();
     } catch (error) {
       console.error('Error getting current user ID:', error);
       return null;

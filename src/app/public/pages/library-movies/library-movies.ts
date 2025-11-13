@@ -66,7 +66,6 @@ export class LibraryMovies implements OnInit {
       error: (err) => {
         console.error('Error al guardar la película:', err);
         if (err.status === 409) {
-          // Por si tu backend devuelve conflicto si ya existe
         } else {
           alert('❌ No se pudo guardar la película.');
         }
