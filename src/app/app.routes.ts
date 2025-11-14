@@ -9,6 +9,12 @@ export const routes: Routes = [
     redirectTo: '/home',
     pathMatch: 'full',
   },
+
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
+  },
+
   {
     path: '',
     component: DefaultLayout,
@@ -17,10 +23,6 @@ export const routes: Routes = [
         path: '',
         loadChildren: () => import('./public/public.routes').then((m) => m.publicRoutes),
         canActivate: [profileCompleteGuard],
-      },
-      {
-        path: 'auth',
-        loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
       },
       {
         path: 'profile',

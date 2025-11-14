@@ -58,7 +58,6 @@ export class EditUserPanel implements OnInit {
 
   ngOnInit() {
     this.initializeForm();
-    this.setupCountryFilter();
     this.loadCountries();
     this.loadRoles();
     this.checkMode();
@@ -67,20 +66,13 @@ export class EditUserPanel implements OnInit {
   initializeForm() {
     this.userForm = this._fb.group({
       fullName: ['', [Validators.required]],
-      username: ['', [Validators.required]],
+      username: [''],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
       country: ['', [Validators.required]],
       roleTypeId: ['', [Validators.required]],
       bibliography: [''],
     });
-  }
-
-  setupCountryFilter() {
-    this.filteredCountries = this.userForm.get('country')!.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filterCountries(value || ''))
-    );
   }
 
   async checkMode() {
@@ -149,6 +141,11 @@ export class EditUserPanel implements OnInit {
         )
         .subscribe((countries) => {
           this.countries = countries;
+
+          this.filteredCountries = this.userForm.get('country')!.valueChanges.pipe(
+            startWith(''),
+            map((value) => this._filterCountries(value || ''))
+          );
         });
     } catch (error) {
       console.error('❌ Error al cargar países:', error);
@@ -209,6 +206,7 @@ export class EditUserPanel implements OnInit {
       email: formData.email,
       password: randomPassword,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           fullName: formData.fullName,
           username: formData.username,
@@ -235,9 +233,24 @@ export class EditUserPanel implements OnInit {
 
     if (profileError) throw new Error('Error al crear el perfil: ' + profileError.message);
 
-    this._snackBarService.success(
-      `Usuario creado exitosamente. Contraseña temporal: ${randomPassword}`
+    const { error: resetError } = await this._supabaseClient.auth.resetPasswordForEmail(
+      formData.email,
+      {
+        redirectTo: `${window.location.origin}/auth/set-password`,
+      }
     );
+
+    if (resetError) {
+      console.error('❌ Error al enviar correo de contraseña:', resetError);
+      this._snackBarService.warning(
+        'Usuario creado, pero no se pudo enviar el correo. Usa "Restablecer contraseña" desde el login.'
+      );
+    } else {
+      this._snackBarService.success(
+        `Correo enviado a ${formData.email} para cambiar su contraseña`
+      );
+    }
+
     this._router.navigate(['/organizational/see-users']);
   }
 
