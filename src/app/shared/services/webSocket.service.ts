@@ -39,7 +39,6 @@ export class WebSocketService {
 
   connect(userId: string, token: string): void {
     if (this.stompClient && this.connectionStatus.value) {
-      console.log('Ya está conectado al WebSocket');
       return;
     }
 
@@ -58,7 +57,6 @@ export class WebSocketService {
       },
 
       onConnect: () => {
-        console.log('✅ Conectado al WebSocket');
         this.connectionStatus.next(true);
         this.subscribeToChannels(userId);
       },
@@ -69,7 +67,6 @@ export class WebSocketService {
       },
 
       onWebSocketClose: () => {
-        console.log('🔴 Conexión WebSocket cerrada');
         this.connectionStatus.next(false);
       },
 
@@ -89,7 +86,6 @@ export class WebSocketService {
       `/user/${userId}/queue/friend-requests`,
       (message: IMessage) => {
         const notification: FriendRequestNotification = JSON.parse(message.body);
-        console.log(' Nueva solicitud de amistad:', notification);
 
         const currentRequests = this.friendRequestsSubject.value;
         this.friendRequestsSubject.next([notification, ...currentRequests]);
@@ -101,7 +97,6 @@ export class WebSocketService {
       `/user/${userId}/queue/friend-requests-accepted`,
       (message: IMessage) => {
         const notification: FriendRequestNotification = JSON.parse(message.body);
-        console.log('Solicitud aceptada:', notification);
 
         this.friendRequestAcceptedSubject.next(notification);
       }

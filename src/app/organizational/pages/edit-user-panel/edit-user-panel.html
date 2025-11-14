@@ -45,9 +45,6 @@
           <mat-label>Nombre de Usuario</mat-label>
           <input matInput formControlName="username" placeholder="Ej: juanperez" />
           <mat-icon matPrefix>account_circle</mat-icon>
-          @if (userForm.get('username')?.hasError('required')) {
-          <mat-error>El nombre de usuario es requerido</mat-error>
-          }
         </mat-form-field>
 
         <!-- Email -->

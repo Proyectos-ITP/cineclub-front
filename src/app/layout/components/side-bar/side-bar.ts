@@ -57,7 +57,6 @@ export class SideBar implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const currentRole = this._tokenService.getUserRole();
-    console.log('🎨 Sidebar ngOnInit - rol actual:', currentRole);
 
     if (currentRole !== null) {
       this.userRole.set(currentRole);
@@ -65,7 +64,6 @@ export class SideBar implements OnInit, OnDestroy {
     }
 
     this._roleSubscription = this._tokenService.userRole$.subscribe((role) => {
-      console.log('🎨 Sidebar recibió cambio de rol:', role);
       this.userRole.set(role);
 
       this.isLoading.set(false);

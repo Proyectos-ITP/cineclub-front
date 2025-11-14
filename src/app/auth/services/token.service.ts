@@ -38,8 +38,6 @@ export class TokenService {
 
     localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
 
-    console.log('💾 Sesión guardada con rol:', userData?.roleType?.code || '(sin rol)');
-
     this._sessionSubject.next(session);
     this._userRoleSubject.next(userData?.roleType?.code ?? null);
   }
