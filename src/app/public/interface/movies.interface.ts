@@ -10,3 +10,14 @@ export interface MoviesInterface {
   originalLanguage?: string;
   director?: string;
 }
+export interface CollectionResponse {
+  data: {
+    id: string;
+    userId: string;
+    movies: MoviesInterface[]; // ← Usas tu interface original para cada película
+  }[];
+  total: number;
+  totalPages: number;
+  page: number;
+  size: number;
+}
