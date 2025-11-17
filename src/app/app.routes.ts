@@ -11,18 +11,16 @@ export const routes: Routes = [
   },
 
   {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
-  },
-
-  {
     path: '',
     component: DefaultLayout,
     children: [
       {
         path: '',
         loadChildren: () => import('./public/public.routes').then((m) => m.publicRoutes),
-        canActivate: [profileCompleteGuard],
+      },
+      {
+        path: 'auth',
+        loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
       },
       {
         path: 'profile',
