@@ -11,20 +11,19 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./movies-content.scss'],
 })
 export class MoviesContent implements OnInit {
-  movies: MoviesInterface[] = [];
-  savedMovies: any[] = [];
+  movies: MoviesInterface[] = []; // ← las películas a mostrar
   loading = false;
 
   constructor(private moviesService: MoviesService) {}
 
   ngOnInit() {
-    this.loadMovies();
-    this.loadSavedMovies();
+    this.loadSavedMovies(); // Cargar favoritos al iniciar
   }
 
+  /** 🔹 Cargar películas del catálogo (si necesitas esta función) */
   loadMovies() {
     this.loading = true;
-    this.moviesService.getMoviesWithPagination({ page: 1, size: 10 }).subscribe({
+    this.moviesService.getMoviesWithPaginationLibrary({ page: 1, size: 10 }).subscribe({
       next: (res) => {
         this.movies = res.data;
         this.loading = false;
@@ -36,17 +35,24 @@ export class MoviesContent implements OnInit {
     });
   }
 
+  /** 🔹 Cargar películas guardadas (favoritos) */
   loadSavedMovies() {
+    this.loading = true;
     this.moviesService.getSavedMovies().subscribe({
       next: (res) => {
-        this.savedMovies = res.data || res;
+        // ❗ AQUÍ ESTABA EL ERROR ❗
+        // Tus películas están en la propiedad movies dentro de data[0]
+        this.movies = res.data[0]?.movies || [];
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error al obtener las películas guardadas:', err);
+        this.loading = false;
       },
     });
   }
 
+  /** 🔹 Guardar película en colección */
   saveMovie(movieId: string) {
     this.moviesService.saveMovieToCollection(movieId).subscribe({
       next: () => {
@@ -60,7 +66,17 @@ export class MoviesContent implements OnInit {
     });
   }
 
-  isSaved(movieId: string): boolean {
-    return this.savedMovies.some((m) => m.movieId === movieId);
+  /** 🔹 Eliminar película guardada */
+  removeMovie(movieId: string) {
+    this.moviesService.removeMovieFromCollection(movieId).subscribe({
+      next: () => {
+        alert('🗑 Película eliminada de guardados');
+        this.loadSavedMovies();
+      },
+      error: (err) => {
+        console.error('Error al eliminar película:', err);
+        alert('❌ No se pudo eliminar la película');
+      },
+    });
   }
 }

@@ -47,12 +47,20 @@
             </div>
           </div>
 
-          <div class="mr-8">
+          <div class="mr-8 flex flex-col gap-2">
             <span
               class="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs rounded-full"
             >
               Guardada
             </span>
+
+            <!-- Botón para eliminar -->
+            <button
+              (click)="removeMovie(movie.id)"
+              class="px-3 py-1 bg-red-500 text-white text-xs rounded-full hover:bg-red-600 transition"
+            >
+              ❌ Eliminar
+            </button>
           </div>
         </div>
 

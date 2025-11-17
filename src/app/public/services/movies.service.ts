@@ -22,6 +22,7 @@ export class MoviesService {
     return headers;
   }
 
+  // 🔥 AHORA CORRECTO → tu lista de guardados NO viene de movies, viene de collections
   getMoviesWithPagination(query: object): Observable<{
     pagination: PaginationInterface;
     data: MoviesInterface[];
@@ -37,12 +38,31 @@ export class MoviesService {
     });
   }
 
-  saveMovieToCollection(movieId: string): Observable<any> {
-    return this._httpClient.post(`${environment.backendUrl}collections`, { movieId });
+  getMoviesWithPaginationLibrary(query: object): Observable<{
+    pagination: PaginationInterface;
+    data: MoviesInterface[];
+  }> {
+    const params = this._httpUtilities.httpParamsFromObject(query);
+
+    return this._httpClient.get<{
+      pagination: PaginationInterface;
+      data: MoviesInterface[];
+    }>(`${environment.backendUrl}collections`, {
+      params,
+      headers: this.headers,
+    });
   }
 
-  deleteSavedMovie(movieId: string): Observable<any> {
-    return this._httpClient.delete(`${environment.backendUrl}collections/${movieId}`, {
+  saveMovieToCollection(movieId: string): Observable<any> {
+    return this._httpClient.post(
+      `${environment.backendUrl}collections`,
+      { movieId },
+      { headers: this.headers }
+    );
+  }
+
+  removeMovieFromCollection(collectionId: string): Observable<any> {
+    return this._httpClient.delete(`${environment.backendUrl}collections/${collectionId}`, {
       headers: this.headers,
     });
   }
