@@ -23,6 +23,10 @@ export const authRoutes: Routes = [
         canActivate: [noAuthGuard],
       },
       {
+        path: 'set-password',
+        loadComponent: () => import('./pages/set-password/set-password').then((m) => m.SetPassword),
+      },
+      {
         path: 'callback',
         component: AuthCallBack,
       },

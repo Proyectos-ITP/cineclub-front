@@ -14,7 +14,6 @@ export const profileIncompleteGuard = () => {
   const userRole = tokenService.getUserRole();
 
   if (userRole && userRole !== '') {
-    console.log('🚫 profileIncompleteGuard: Perfil ya completo, redirigiendo al home');
     return router.createUrlTree(['/']);
   }
 
