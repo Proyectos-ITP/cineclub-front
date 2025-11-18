@@ -4,6 +4,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { SnackBarService } from '../../shared/services/snackBar.service';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
+import { SupabaseService } from './supabase.service';
 import { UserWithRoleInterface } from '../interfaces/session.interface';
 
 @Injectable({
@@ -13,6 +14,7 @@ export class SignInService {
   private readonly _snackBarService: SnackBarService = inject(SnackBarService);
   private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _supabaseClient = inject(SupabaseClient);
+  private readonly _supabaseService: SupabaseService = inject(SupabaseService);
   private readonly _router: Router = inject(Router);
 
   private async getUserWithRole(userId: string): Promise<UserWithRoleInterface> {
@@ -199,16 +201,14 @@ export class SignInService {
 
   async signOut() {
     try {
-      const { error } = await this._supabaseClient.auth.signOut();
-      if (error) throw error;
-
+      await this._supabaseClient.auth.signOut();
+    } catch (error: any) {
+      console.error('❌ Error al cerrar sesión en Supabase:', error);
+    } finally {
       this._tokenService.clearSession();
+      this._supabaseService.clearUser();
       this._router.navigate(['/auth/login']);
       this._snackBarService.success('Sesión cerrada correctamente.');
-    } catch (error: any) {
-      console.error('❌ Error al cerrar sesión:', error);
-      this._snackBarService.error('Error al cerrar sesión.');
-      throw error;
     }
   }
 }
