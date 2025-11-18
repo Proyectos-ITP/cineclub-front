@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="custom-snackbar" [ngClass]="data.type">
+    <div class="custom-snackbar" [ngClass]="data.type" (click)="dismiss()">
       {{ data.message }}
     </div>
   `,
@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
         color: white;
         font-size: 14px;
         font-weight: 500;
+        cursor: pointer;
       }
       .success {
         background-color: #4caf50;
@@ -38,8 +39,13 @@ import { CommonModule } from '@angular/common';
 export class CustomSnackbarComponent {
   data = inject<{ message: string; type: string }>(MAT_SNACK_BAR_DATA);
   private cdr = inject(ChangeDetectorRef);
+  private snackBarRef = inject(MatSnackBarRef);
 
   constructor() {
     Promise.resolve().then(() => this.cdr.detectChanges());
+  }
+
+  dismiss() {
+    this.snackBarRef.dismiss();
   }
 }

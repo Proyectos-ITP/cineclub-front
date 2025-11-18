@@ -142,4 +142,8 @@ export class SupabaseService {
       throw error;
     }
   }
+
+  clearUser(): void {
+    this.currentUser.next(null);
+  }
 }

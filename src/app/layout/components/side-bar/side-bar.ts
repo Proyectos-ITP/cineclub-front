@@ -10,11 +10,11 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { SIDEBAR_ITEMS } from '../../constants/layout.constants';
 import { RouterLink } from '@angular/router';
 import { SignInService } from '../../../auth/services/signIn.service';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { TokenService } from '../../../auth/services/token.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 import { Subscription } from 'rxjs';
@@ -25,6 +25,28 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, MatIconModule, RouterLink, LoaderComponent],
   templateUrl: './side-bar.html',
   styleUrls: ['./side-bar.scss'],
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scaleY(0)', transformOrigin: 'top' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'scaleY(1)' })),
+      ]),
+      transition(':leave', [
+        style({ opacity: 1, transform: 'scaleY(1)', transformOrigin: 'top' }),
+        animate('200ms ease-in', style({ opacity: 0, transform: 'scaleY(0)' })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(-10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateX(0)' })),
+      ]),
+      transition(':leave', [
+        style({ opacity: 1, transform: 'translateX(0)' }),
+        animate('150ms ease-in', style({ opacity: 0, transform: 'translateX(-10px)' })),
+      ]),
+    ]),
+  ],
 })
 export class SideBar implements OnInit, OnDestroy {
   @Input() closeSideBar: boolean = false;
@@ -35,7 +57,6 @@ export class SideBar implements OnInit, OnDestroy {
   openSubMenu: Record<string, boolean> = {};
 
   private readonly _singInService: SignInService = inject(SignInService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
   private readonly _tokenService: TokenService = inject(TokenService);
   private _roleSubscription?: Subscription;
 
@@ -81,11 +102,6 @@ export class SideBar implements OnInit, OnDestroy {
   }
 
   toggleSubMenu(title: string): void {
-    if (this.isCollapsed) {
-      this.isCollapsed = false;
-      this.collapsed.emit(this.isCollapsed);
-    }
-
     if (this.openSubMenu[title]) {
       this.openSubMenu[title] = false;
     } else {
@@ -101,12 +117,7 @@ export class SideBar implements OnInit, OnDestroy {
   }
 
   async signOut() {
-    try {
-      await this._singInService.signOut();
-      this.isLoggedIn = false;
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      this._snackBarService.error('Error al cerrar sesión');
-    }
+    await this._singInService.signOut();
+    this.isLoggedIn = false;
   }
 }
