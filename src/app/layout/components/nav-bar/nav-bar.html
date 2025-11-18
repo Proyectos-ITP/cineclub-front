@@ -20,43 +20,6 @@
         >
           Inicio
         </button>
-        <button
-          mat-fab
-          extended
-          [matMenuTriggerFor]="destokMenuCine"
-          class="!min-w-auto md:!min-w-auto lg:!min-w-[100px] 2xl:!min-w-[155px] 3xl:!min-w-[155px]"
-        >
-          Películas
-        </button>
-
-        <mat-menu #destokMenuCine="matMenu">
-          <button mat-menu-item routerLink="">
-            <span>Más recomendadas</span>
-          </button>
-          <button mat-menu-item routerLink=" ">
-            <span>Recientes</span>
-          </button>
-        </mat-menu>
-
-        <button
-          mat-fab
-          extended
-          [matMenuTriggerFor]="destokMenuBook"
-          class="!min-w-auto md:!min-w-auto lg:!min-w-[100px] 2xl:!min-w-[155px] 3xl:!min-w-[155px]"
-        >
-          Libros
-        </button>
-
-        <mat-menu #destokMenuBook="matMenu">
-          <button mat-menu-item routerLink="">
-            <!-- <mat-icon class="icon-small">home</mat-icon> -->
-            <span>Más recomendados</span>
-          </button>
-          <button mat-menu-item routerLink=" ">
-            <!-- <mat-icon class="icon-small">login</mat-icon> -->
-            <span>Recientes</span>
-          </button>
-        </mat-menu>
       </div>
     </section>
 
@@ -94,42 +57,6 @@
         </button>
       </mat-menu>
 
-      } @else {
-      <button mat-icon-button [matMenuTriggerFor]="mobileMenu" aria-label="Menú móvil">
-        <mat-icon>menu</mat-icon>
-      </button>
-
-      <mat-menu #mobileMenu="matMenu">
-        <!-- Películas -->
-        <button mat-menu-item [matMenuTriggerFor]="mobileMenuCine">
-          <mat-icon>movie</mat-icon>
-          <span>Películas</span>
-        </button>
-
-        <mat-menu #mobileMenuCine="matMenu">
-          <button mat-menu-item routerLink="">
-            <span>Más recomendadas</span>
-          </button>
-          <button mat-menu-item routerLink="">
-            <span>Recientes</span>
-          </button>
-        </mat-menu>
-
-        <!-- Libros -->
-        <button mat-menu-item [matMenuTriggerFor]="mobileMenuBook">
-          <mat-icon>book</mat-icon>
-          <span>Libros</span>
-        </button>
-
-        <mat-menu #mobileMenuBook="matMenu">
-          <button mat-menu-item routerLink="">
-            <span>Más recomendados</span>
-          </button>
-          <button mat-menu-item routerLink="">
-            <span>Recientes</span>
-          </button>
-        </mat-menu>
-      </mat-menu>
       }
     </section>
   </article>

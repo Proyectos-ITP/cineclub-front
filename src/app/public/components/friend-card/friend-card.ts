@@ -41,20 +41,29 @@ export class FriendCard implements OnInit {
 
     const query = {
       page: this.paginationParams.page,
-      perPage: this.paginationParams.perPage,
+      size: this.paginationParams.perPage,
       search: filter,
       ...this.params,
     };
 
+    console.log('🔍 Query enviada al backend:', query);
+
     this._userFriend.getUserWithPagination(query).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+        console.log('📦 Respuesta del backend:', res);
         this.users = res.data || [];
-        if (res.pagination) {
-          this.paginationParams = {
-            ...this.paginationParams,
-            ...res.pagination,
-          };
-        }
+
+        // Mapear los campos del backend a nuestro modelo
+        this.paginationParams = {
+          page: res.page || this.paginationParams.page,
+          perPage: res.size || this.paginationParams.perPage,
+          total: res.total || 0,
+          pageCount: res.totalPages || 0,
+          hasPreviousPage: res.hasPrevious || false,
+          hasNextPage: res.hasNext || false,
+        };
+
+        console.log('📊 Parámetros de paginación actualizados:', this.paginationParams);
         this.loading = false;
       },
       error: (err) => {

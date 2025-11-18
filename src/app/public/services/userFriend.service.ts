@@ -16,7 +16,7 @@ export class UserFriend {
   getUserWithPagination(query: object): Observable<ApiResponseInterface<UserMongoComplete[]>> {
     const params = this._httpUtilities.httpParamsFromObject(query);
     return this._httpClient.get<ApiResponseInterface<UserMongoComplete[]>>(
-      `${environment.backendUrl}users/paginated`,
+      `${environment.backendUrl}users/not-friends`,
       { params }
     );
   }
