@@ -1,0 +1,77 @@
+<div class="p-8 text-center text-black">
+  <h2 class="text-4xl font-bold mb-8">👥 Mis amigos</h2>
+
+  <!-- Cargando -->
+  <div *ngIf="loading" class="flex flex-col items-center justify-center gap-2 text-gray-600">
+    <span class="loading loading-spinner loading-lg"></span>
+    <p>Cargando amigos...</p>
+  </div>
+
+  <!-- NO hay amigos -->
+  <p *ngIf="!loading && friends.length === 0" class="text-gray-600 mt-8 text-lg">
+    No tienes amigos agregados.
+  </p>
+
+  <!-- Lista de amigos -->
+  <div *ngIf="!loading && friends.length > 0" class="flex flex-col gap-4">
+    <div
+      *ngFor="let friendItem of friends"
+      class="bg-white shadow-md rounded-2xl p-5 flex items-center gap-4 hover:shadow-lg hover:scale-[1.01] transition-all duration-300 border border-gray-200"
+    >
+      <!-- Avatar -->
+      <div class="flex-shrink-0">
+        <img
+          src="https://i.pravatar.cc/60?u={{ friendItem.friend.id }}"
+          alt="avatar"
+          class="w-14 h-14 rounded-full border-2 border-indigo-200"
+        />
+      </div>
+
+      <!-- Info del amigo -->
+      <div class="flex-1 text-left">
+        <h3 class="text-lg font-semibold text-gray-800">{{ friendItem.friend.fullName }}</h3>
+        <p class="text-sm text-gray-500">{{ friendItem.friend.email }}</p>
+        <p class="text-xs text-gray-400 mt-1">
+          Amigos desde: {{ friendItem.createdAt | date : 'dd/MM/yyyy' }}
+        </p>
+      </div>
+
+      <!-- Acciones -->
+      <div class="flex items-center gap-2">
+        <button
+          class="text-red-600 hover:text-red-800 transition-colors p-2 rounded-full hover:bg-red-50"
+          (click)="openRemoveFriendDialog(friendItem.id, friendItem.friend.fullName)"
+          title="Eliminar amigo"
+        >
+          <mat-icon>person_remove</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div *ngIf="totalPages > 1" class="flex items-center justify-center gap-4 mt-6">
+      <button
+        class="px-4 py-2 bg-indigo-500 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-indigo-600 transition-colors"
+        [disabled]="!hasPrevious"
+        (click)="previousPage()"
+      >
+        Anterior
+      </button>
+      <span class="text-gray-600">
+        Página {{ currentPage }} de {{ totalPages }}
+      </span>
+      <button
+        class="px-4 py-2 bg-indigo-500 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-indigo-600 transition-colors"
+        [disabled]="!hasNext"
+        (click)="nextPage()"
+      >
+        Siguiente
+      </button>
+    </div>
+
+    <!-- Total de amigos -->
+    <p class="text-sm text-gray-500 mt-2">
+      Total de amigos: {{ total }}
+    </p>
+  </div>
+</div>
