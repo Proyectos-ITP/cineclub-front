@@ -1,0 +1,105 @@
+<article
+  class="bg-[#F0F4F9]/70 backdrop-blur-sm rounded-lg shadow-lg border-[0.5px] border-[#757575]"
+>
+  <mat-tab-group>
+    <!-- Tab de Películas -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">local_movies</mat-icon>
+        Películas
+      </ng-template>
+
+      <div class="p-8 text-center text-black">
+        <h2 class="text-2xl font-bold mb-6">Películas guardadas</h2>
+
+        <!-- Cargando -->
+        <div
+          *ngIf="loadingMovies"
+          class="flex flex-col items-center justify-center gap-2 text-gray-600"
+        >
+          <span class="loading loading-spinner loading-lg"></span>
+          <p>Cargando películas...</p>
+        </div>
+
+        <!-- NO hay películas -->
+        <p *ngIf="!loadingMovies && movies.length === 0" class="text-gray-600 mt-4 text-base">
+          Este usuario no tiene películas guardadas.
+        </p>
+
+        <!-- Lista de películas -->
+        <div *ngIf="!loadingMovies && movies.length > 0" class="flex flex-col gap-6">
+          <div
+            *ngFor="let movie of movies"
+            class="bg-white shadow-md rounded-2xl p-5 flex flex-col sm:flex-row items-start gap-4 hover:shadow-lg transition-all duration-300 border border-gray-200"
+          >
+            <!-- Imagen -->
+            <img
+              *ngIf="movie.posterPath"
+              [src]="movie.posterPath"
+              alt="{{ movie.title }}"
+              class="w-32 h-48 object-cover rounded-xl shadow-sm"
+            />
+
+            <!-- Contenido -->
+            <div class="flex-1 text-left">
+              <!-- Badge -->
+              <div class="flex items-center justify-end mb-2">
+                <span
+                  class="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-full"
+                >
+                  Película
+                </span>
+              </div>
+
+              <!-- Título -->
+              <h3 class="text-xl font-semibold mb-1">{{ movie.title }}</h3>
+
+              <!-- Descripción -->
+              <p class="text-gray-700 text-sm mb-3 line-clamp-3">
+                {{ movie.overview || 'Sin descripción disponible.' }}
+              </p>
+
+              <!-- Fecha -->
+              <p class="text-gray-500 text-xs mb-3">
+                <span class="font-medium">Fecha de estreno:</span>
+                {{ movie.releaseDate | date : 'yyyy-MM-dd' }}
+              </p>
+
+              <!-- Reacciones -->
+              <div class="flex items-center gap-4 text-gray-600 text-sm">
+                <span class="flex items-center gap-1">❤️ 27</span>
+                <span class="flex items-center gap-1">💬 2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Tab de Libros -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">book</mat-icon>
+        Libros
+      </ng-template>
+
+      <div class="container mx-auto px-4 py-4 text-black">
+        <h2 class="text-2xl font-bold mb-6 text-center">Libros guardados</h2>
+
+        <div class="grid gap-6">
+          @for (book of books; track $index) {
+          <app-card-recomendations
+            [title]="book.title ?? ''"
+            [author]="book.author ?? ''"
+            [description]="book.description ?? ''"
+            [image]="book.image ?? ''"
+            [score]="book.score ?? 0"
+            [likes]="book.likes ?? 0"
+            [comments]="book.comments ?? 0"
+          />
+          }
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</article>

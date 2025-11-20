@@ -19,4 +19,10 @@ export const profileRoutes: Routes = [
     loadComponent: () => import('./pages/my-friends/my-friends').then((m) => m.MyFriends),
     canActivate: [profileCompleteGuard],
   },
+  {
+    path: 'friend-profile/:friendId',
+    loadComponent: () =>
+      import('./pages/friend-profile/friend-profile').then((m) => m.FriendProfile),
+    canActivate: [profileCompleteGuard],
+  },
 ];

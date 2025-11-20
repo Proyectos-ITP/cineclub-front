@@ -1,0 +1,21 @@
+<article class="relative w-full">
+  <div class="w-full h-[400px] bg-fondo"></div>
+</article>
+
+@if (friendId()) {
+<div class="flex flex-col 2xl:flex-row">
+  <!-- Info del perfil del amigo -->
+  <section
+    class="relative z-10 mt-[-300px] w-full 2xl:w-[40%] px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mb-8 2xl:mb-0"
+  >
+    <app-friend-info-card [friendId]="friendId()!"></app-friend-info-card>
+  </section>
+
+  <!-- Biblioteca del amigo -->
+  <section
+    class="relative z-10 2xl:mt-[-300px] w-full 2xl:w-[60%] px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-20 mb-8"
+  >
+    <app-friend-library-tabs [friendId]="friendId()!"></app-friend-library-tabs>
+  </section>
+</div>
+}

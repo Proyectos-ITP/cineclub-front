@@ -72,4 +72,10 @@ export class MoviesService {
       headers: this.headers,
     });
   }
+
+  getUserSavedMovies(userId: string): Observable<any> {
+    return this._httpClient.get(`${environment.backendUrl}collections/user/${userId}`, {
+      headers: this.headers,
+    });
+  }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { FriendRequestService } from '../../../shared/services/friend-request.service';
@@ -10,7 +11,7 @@ import { FriendInterface } from '../../interfaces/friends.interface';
 @Component({
   selector: 'app-friends-content',
   standalone: true,
-  imports: [CommonModule, MatIcon],
+  imports: [CommonModule, RouterLink, MatIcon],
   templateUrl: './friends-content.html',
   styleUrls: ['./friends-content.scss'],
 })
