@@ -6,11 +6,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { MatIcon } from '@angular/material/icon';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-movies-content',
   standalone: true,
-  imports: [CommonModule, MatIcon],
+  imports: [CommonModule, MatIcon, LoaderComponent],
   templateUrl: './movies-content.html',
   styleUrls: ['./movies-content.scss'],
 })

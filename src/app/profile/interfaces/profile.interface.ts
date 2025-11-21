@@ -7,6 +7,7 @@ export interface ProfileInterface {
   bibliography?: string;
   email?: string;
   roleTypeId?: string;
+  avatar_url?: string;
   created_at: Date;
 }
 export interface RoleTypeInterface {

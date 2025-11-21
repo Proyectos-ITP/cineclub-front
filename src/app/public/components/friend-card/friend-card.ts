@@ -21,6 +21,7 @@ export class FriendCard implements OnInit {
 
   loading: boolean = false;
   sendingRequest: { [userId: string]: boolean } = {};
+  cancelingRequest: { [userId: string]: boolean } = {};
   params: any = {};
   users: UserMongoComplete[] = [];
   paginationParams: PaginationInterface = {
@@ -46,14 +47,10 @@ export class FriendCard implements OnInit {
       ...this.params,
     };
 
-    console.log('🔍 Query enviada al backend:', query);
-
     this._userFriend.getUserWithPagination(query).subscribe({
       next: (res: any) => {
-        console.log('📦 Respuesta del backend:', res);
         this.users = res.data || [];
 
-        // Mapear los campos del backend a nuestro modelo
         this.paginationParams = {
           page: res.page || this.paginationParams.page,
           perPage: res.size || this.paginationParams.perPage,
@@ -63,7 +60,6 @@ export class FriendCard implements OnInit {
           hasNextPage: res.hasNext || false,
         };
 
-        console.log('📊 Parámetros de paginación actualizados:', this.paginationParams);
         this.loading = false;
       },
       error: (err) => {
@@ -97,7 +93,9 @@ export class FriendCard implements OnInit {
         this._snackBarService.success(
           response.message || 'Solicitud de amistad enviada correctamente'
         );
-        this.users = this.users.filter((user) => user.id !== userId);
+        this.users = this.users.map((user) =>
+          user.id === userId ? { ...user, hasPendingRequest: true, isSender: true } : user
+        );
         this.sendingRequest[userId] = false;
       },
       error: (err) => {
@@ -105,6 +103,31 @@ export class FriendCard implements OnInit {
         const errorMessage = err?.error?.message || 'No se pudo enviar la solicitud de amistad';
         this._snackBarService.error(errorMessage);
         this.sendingRequest[userId] = false;
+      },
+    });
+  }
+
+  cancelFriendRequest(userId: string): void {
+    if (this.cancelingRequest[userId]) return;
+
+    this.cancelingRequest[userId] = true;
+
+    this._friendRequestService.cancelFriendRequest(userId).subscribe({
+      next: (response) => {
+        this._snackBarService.success(
+          response.message || 'Solicitud de amistad cancelada correctamente'
+        );
+
+        this.users = this.users.map((user) =>
+          user.id === userId ? { ...user, hasPendingRequest: false, isSender: null } : user
+        );
+        this.cancelingRequest[userId] = false;
+      },
+      error: (err) => {
+        console.error('❌ Error al cancelar solicitud de amistad:', err);
+        const errorMessage = err?.error?.message || 'No se pudo cancelar la solicitud de amistad';
+        this._snackBarService.error(errorMessage);
+        this.cancelingRequest[userId] = false;
       },
     });
   }

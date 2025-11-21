@@ -11,6 +11,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { AuthCard } from '../../components/auth-card/auth-card';
 import { TokenService } from '../../services/token.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-set-password',
@@ -24,6 +25,7 @@ import { TokenService } from '../../services/token.service';
     MatIconModule,
     MatProgressSpinnerModule,
     AuthCard,
+    LoaderComponent,
   ],
   templateUrl: './set-password.html',
   styleUrl: './set-password.scss',

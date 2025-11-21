@@ -47,6 +47,12 @@ export class FriendRequestService {
     );
   }
 
+  cancelFriendRequest(receiverId: string): Observable<FriendRequestResponse> {
+    return this._httpClient.delete<FriendRequestResponse>(
+      `${environment.backendUrl}social/friend-requests/cancel/${receiverId}`
+    );
+  }
+
   getFriends(query: object = {}): Observable<FriendsResponseInterface> {
     const params = this._httpUtilities.httpParamsFromObject(query);
     return this._httpClient.get<FriendsResponseInterface>(

@@ -4,11 +4,12 @@ import { ProfileService } from '../../services/profile.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-card-info-user',
   standalone: true,
-  imports: [MatIconModule, CommonModule],
+  imports: [MatIconModule, CommonModule, LoaderComponent],
   templateUrl: './card-info-user.html',
   styleUrls: ['./card-info-user.scss'],
 })
@@ -47,6 +48,10 @@ export class CardInfoUser implements OnInit {
         throw new Error('No hay una sesión activa. Por favor, inicia sesión nuevamente.');
 
       const userId = session.user.id;
+      const avatarUrl =
+        session.user.user_metadata?.['avatar_url'] ||
+        session.user.identities?.[0]?.identity_data?.['avatar_url'];
+
       const { data: profile, error: profileError } = await this._supabaseClient
         .from('profile')
         .select('*')
@@ -56,7 +61,18 @@ export class CardInfoUser implements OnInit {
       if (profileError) throw profileError;
       if (!profile) throw new Error('No se encontró el perfil.');
 
-      this.profile.set(profile);
+      if (avatarUrl && !profile.avatar_url) {
+        const { data: updatedProfile } = await this._supabaseClient
+          .from('profile')
+          .update({ avatar_url: avatarUrl })
+          .eq('id', userId)
+          .select()
+          .single();
+
+        this.profile.set(updatedProfile || { ...profile, avatar_url: avatarUrl });
+      } else {
+        this.profile.set({ ...profile, avatar_url: profile.avatar_url || avatarUrl });
+      }
     } catch (err: Error | unknown) {
       console.error('❌ Error cargando perfil:', err);
       this.errorMessage.set(

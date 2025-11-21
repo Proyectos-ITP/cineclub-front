@@ -23,6 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-user-list',
@@ -40,6 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     RouterLink,
     MatTooltipModule,
+    LoaderComponent,
   ],
   templateUrl: './see-users.html',
   styleUrl: './see-users.scss',

@@ -7,11 +7,12 @@ import { FriendRequestService } from '../../../shared/services/friend-request.se
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
 import { FriendInterface } from '../../interfaces/friends.interface';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-friends-content',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIcon],
+  imports: [CommonModule, RouterLink, MatIcon, LoaderComponent],
   templateUrl: './friends-content.html',
   styleUrls: ['./friends-content.scss'],
 })

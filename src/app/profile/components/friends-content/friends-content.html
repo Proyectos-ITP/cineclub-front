@@ -3,8 +3,7 @@
 
   <!-- Cargando -->
   <div *ngIf="loading" class="flex flex-col items-center justify-center gap-2 text-gray-600">
-    <span class="loading loading-spinner loading-lg"></span>
-    <p>Cargando amigos...</p>
+    <div class="flex justify-center items-center"><app-loader></app-loader></div>
   </div>
 
   <!-- NO hay amigos -->
@@ -64,9 +63,7 @@
       >
         Anterior
       </button>
-      <span class="text-gray-600">
-        Página {{ currentPage }} de {{ totalPages }}
-      </span>
+      <span class="text-gray-600"> Página {{ currentPage }} de {{ totalPages }} </span>
       <button
         class="px-4 py-2 bg-indigo-500 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-indigo-600 transition-colors"
         [disabled]="!hasNext"
@@ -77,8 +74,6 @@
     </div>
 
     <!-- Total de amigos -->
-    <p class="text-sm text-gray-500 mt-2">
-      Total de amigos: {{ total }}
-    </p>
+    <p class="text-sm text-gray-500 mt-2">Total de amigos: {{ total }}</p>
   </div>
 </div>

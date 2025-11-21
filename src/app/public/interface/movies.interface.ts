@@ -14,7 +14,7 @@ export interface CollectionResponse {
   data: {
     id: string;
     userId: string;
-    movies: MoviesInterface[]; // ← Usas tu interface original para cada película
+    movies: MoviesInterface[];
   }[];
   total: number;
   totalPages: number;

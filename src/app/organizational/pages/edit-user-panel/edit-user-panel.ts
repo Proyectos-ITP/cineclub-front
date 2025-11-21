@@ -18,6 +18,7 @@ import { UserAdminService } from '../../services/userAdmin.service';
 import { SnackBarService } from '../../../shared/services/snackBar.service';
 import { RoleTypeInterface } from '../../../auth/interfaces/user.interface';
 import { RamdomPasswordService } from '../../../shared/services/ramdomPassword.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-edit-user-panel',
@@ -33,6 +34,7 @@ import { RamdomPasswordService } from '../../../shared/services/ramdomPassword.s
     MatAutocompleteModule,
     MatIconModule,
     RouterLink,
+    LoaderComponent,
   ],
   templateUrl: './edit-user-panel.html',
   styleUrl: './edit-user-panel.scss',

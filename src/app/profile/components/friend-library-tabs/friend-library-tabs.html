@@ -17,8 +17,7 @@
           *ngIf="loadingMovies"
           class="flex flex-col items-center justify-center gap-2 text-gray-600"
         >
-          <span class="loading loading-spinner loading-lg"></span>
-          <p>Cargando películas...</p>
+          <div class="flex justify-center items-center"><app-loader></app-loader></div>
         </div>
 
         <!-- NO hay películas -->
