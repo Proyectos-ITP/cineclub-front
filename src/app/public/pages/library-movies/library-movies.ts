@@ -7,11 +7,19 @@ import { PaginationInterface } from '../../../shared/interfaces/pagination.inter
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-library-movies',
   standalone: true,
-  imports: [CommonModule, MatPaginatorModule, MatMenuModule, MatIconModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatIconModule,
+    MatButtonModule,
+    LoaderComponent,
+  ],
   templateUrl: './library-movies.html',
 })
 export class LibraryMovies implements OnInit {

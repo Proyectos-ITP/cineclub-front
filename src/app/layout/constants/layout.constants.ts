@@ -24,6 +24,11 @@ export const SIDEBAR_ITEMS: SideBarItem[] = [
         title: 'Cambiar contraseña',
         route: '/profile/change-password',
       },
+      {
+        icon: 'group',
+        title: 'Mis amigos',
+        route: '/profile/my-friends',
+      },
     ],
   },
   {

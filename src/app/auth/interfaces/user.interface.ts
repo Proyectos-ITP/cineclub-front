@@ -26,6 +26,9 @@ export interface UserMongoComplete {
   username?: string;
   email?: string;
   country: string;
+  hasPendingRequest?: boolean;
+  pendingRequestId?: string | null;
+  isSender?: boolean | null;
 }
 
 export interface RoleTypeInterface {

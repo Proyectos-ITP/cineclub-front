@@ -9,6 +9,8 @@ import {
   signal,
   OnInit,
   OnDestroy,
+  HostListener,
+  ElementRef,
 } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
@@ -58,6 +60,7 @@ export class SideBar implements OnInit, OnDestroy {
 
   private readonly _singInService: SignInService = inject(SignInService);
   private readonly _tokenService: TokenService = inject(TokenService);
+  private readonly _elementRef: ElementRef = inject(ElementRef);
   private _roleSubscription?: Subscription;
 
   private userRole = signal<string | null>(null);
@@ -114,6 +117,16 @@ export class SideBar implements OnInit, OnDestroy {
 
   closeAllSubMenus(): void {
     this.openSubMenu = {};
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.isCollapsed && Object.values(this.openSubMenu).some((v) => v)) {
+      const clickedInside = this._elementRef.nativeElement.contains(event.target);
+      if (!clickedInside) {
+        this.closeAllSubMenus();
+      }
+    }
   }
 
   async signOut() {

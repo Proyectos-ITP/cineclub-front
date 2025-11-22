@@ -1,13 +1,13 @@
-import { MatSpinner } from '@angular/material/progress-spinner';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthCallbackService } from '../../services/callBack.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-auth-call-back',
   standalone: true,
-  imports: [MatSpinner],
+  imports: [LoaderComponent],
   templateUrl: './auth-call-back.html',
   styleUrl: './auth-call-back.scss',
 })

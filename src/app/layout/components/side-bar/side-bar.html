@@ -17,11 +17,11 @@
       class="w-[40px] h-[40px] flex text-xl transition-all duration-700 ease-in-out bg-white hover:bg-[#7d0fd1] hover:text-white rounded-full items-center justify-center border-[0.5px] border-black group"
     >
       @if (isCollapsed) {
-      <mat-icon class="text-[#7d0fd1] group-hover:text-[#e8d5ff] transition-colors duration-200"
+      <mat-icon class="text-[#7d0fd1] group-hover:text-[#e8d5ff] transition-colors duration-700"
         >keyboard_arrow_right</mat-icon
       >
       } @else {
-      <mat-icon class="text-[#7d0fd1] group-hover:text-[#e8d5ff] transition-colors duration-200"
+      <mat-icon class="text-[#7d0fd1] group-hover:text-[#e8d5ff] transition-colors duration-700"
         >close</mat-icon
       >
       }
@@ -34,7 +34,7 @@
     } @else { @for (item of menuItems(); track item.title) {
 
     <div
-      class="flex cursor-pointer transition-colors duration-200 ease-in-out relative group"
+      class="flex cursor-pointer transition-colors duration-700 ease-in-out relative group"
       (click)="item.children ? toggleSubMenu(item.title) : null"
       [routerLink]="!item.children ? item.route : null"
       [ngClass]="{
@@ -43,7 +43,7 @@
         'items-center justify-between gap-3 p-2 rounded-md hover:bg-[#7d0fd1]': !isCollapsed
       }"
     >
-      <mat-icon class="group-hover:text-[#e8d5ff] transition-colors duration-200">{{
+      <mat-icon class="group-hover:text-[#e8d5ff] transition-colors duration-700">{{
         item.icon
       }}</mat-icon>
 
@@ -76,7 +76,7 @@
       @for (child of item.children; track child.title) {
       <div
         [routerLink]="child.route"
-        class="flex items-center gap-2 cursor-pointer px-3 py-1 rounded hover:bg-[#7d0fd1] transition-all duration-200"
+        class="flex items-center gap-2 cursor-pointer px-3 py-1 rounded hover:bg-[#7d0fd1] transition-all duration-700"
       >
         <mat-icon class="text-sm">{{ child.icon }}</mat-icon>
         <span>{{ child.title }}</span>
@@ -87,7 +87,7 @@
   </nav>
 
   <div
-    class="mt-auto mb-2 cursor-pointer transition-colors duration-200 ease-in-out flex items-center group"
+    class="mt-auto mb-2 cursor-pointer transition-colors duration-700 ease-in-out flex items-center group"
     [ngClass]="{
       'justify-center w-[40px] h-[40px] bg-white hover:bg-[#7d0fd1] text-[#7d0fd1] hover:text-[#9811fb] rounded-full border-[0.5px] border-black mx-auto':
         isCollapsed,
@@ -95,7 +95,7 @@
     }"
     (click)="signOut()"
   >
-    <mat-icon class="group-hover:text-[#7d0fd1] transition-colors duration-200">logout</mat-icon>
+    <mat-icon class="group-hover:text-[#7d0fd1] transition-colors duration-700">logout</mat-icon>
     @if (!isCollapsed) {
     <span class="truncate">Cerrar sesión</span>
     }

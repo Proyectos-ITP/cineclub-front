@@ -149,4 +149,18 @@ export class FriendRequests implements OnInit, OnDestroy {
       },
     });
   }
+
+  cancelRequest(receiverId: string): void {
+    this._friendRequestService.cancelFriendRequest(receiverId).subscribe({
+      next: (response) => {
+        this._snackBarService.success(response.message || 'Solicitud cancelada correctamente');
+        this.loadSentRequests();
+      },
+      error: (err) => {
+        console.error('❌ Error al cancelar solicitud:', err);
+        const errorMessage = err?.error?.message || 'No se pudo cancelar la solicitud';
+        this._snackBarService.error(errorMessage);
+      },
+    });
+  }
 }

@@ -4,13 +4,13 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NavBar } from '../../components/nav-bar/nav-bar';
 import { SupabaseService } from '../../../auth/services/supabase.service';
 import { filter, Subscription } from 'rxjs';
-import { MatSpinner } from '@angular/material/progress-spinner';
 import { SideBar } from '../../components/side-bar/side-bar';
 import { Notification } from '../../components/notification/notification';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { TokenService } from '../../../auth/services/token.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-default-layout',
@@ -18,12 +18,12 @@ import { TokenService } from '../../../auth/services/token.service';
   imports: [
     RouterOutlet,
     NavBar,
-    MatSpinner,
     SideBar,
     Notification,
     MatIconModule,
     MatButtonModule,
     CommonModule,
+    LoaderComponent,
   ],
   templateUrl: './default-layout.html',
   styleUrl: './default-layout.scss',

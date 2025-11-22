@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { FriendRequestResponse } from '../interfaces/friend-request.interface';
+import { FriendsResponseInterface } from '../../profile/interfaces/friends.interface';
+import { HttpUtilitiesService } from '../utilities/http-utilities.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FriendRequestService {
   private readonly _httpClient: HttpClient = inject(HttpClient);
+  private readonly _httpUtilities: HttpUtilitiesService = inject(HttpUtilitiesService);
 
   sendFriendRequest(friendId: string): Observable<FriendRequestResponse> {
     const body = { friendId };
@@ -41,6 +44,26 @@ export class FriendRequestService {
     return this._httpClient.put<FriendRequestResponse>(
       `${environment.backendUrl}social/friend-requests/reject/${senderId}`,
       {}
+    );
+  }
+
+  cancelFriendRequest(receiverId: string): Observable<FriendRequestResponse> {
+    return this._httpClient.delete<FriendRequestResponse>(
+      `${environment.backendUrl}social/friend-requests/cancel/${receiverId}`
+    );
+  }
+
+  getFriends(query: object = {}): Observable<FriendsResponseInterface> {
+    const params = this._httpUtilities.httpParamsFromObject(query);
+    return this._httpClient.get<FriendsResponseInterface>(
+      `${environment.backendUrl}social/friends`,
+      { params }
+    );
+  }
+
+  removeFriend(friendId: string): Observable<FriendRequestResponse> {
+    return this._httpClient.delete<FriendRequestResponse>(
+      `${environment.backendUrl}social/friends/${friendId}`
     );
   }
 }
