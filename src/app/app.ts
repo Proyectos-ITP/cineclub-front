@@ -28,7 +28,9 @@ export class App implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      const session: any = JSON.parse(localStorage.getItem('app_session') || '{}');
+      const session: { user: { id: string }; access_token: string } = JSON.parse(
+        localStorage.getItem('app_session') || '{}',
+      );
       const userId = session['user']?.['id'];
 
       if (userId) {

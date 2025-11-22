@@ -49,7 +49,7 @@ export class SetPassword implements OnInit {
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
       },
-      { validators: this.passwordsMatchValidator }
+      { validators: this.passwordsMatchValidator },
     );
   }
 
@@ -95,9 +95,10 @@ export class SetPassword implements OnInit {
       this._tokenService.clearSession();
 
       this._snackBarService.success(
-        '¡Contraseña establecida correctamente! Ahora puedes iniciar sesión.'
+        '¡Contraseña establecida correctamente! Ahora puedes iniciar sesión.',
       );
       this._router.navigate(['/auth/login']);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       this._snackBarService.error(error.message || 'Error al establecer la contraseña.');
     } finally {

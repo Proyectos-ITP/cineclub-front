@@ -15,7 +15,7 @@ import { SnackBarService } from '../services/snackBar.service';
 export class ResponseInterceptor implements HttpInterceptor {
   private readonly _snackBarService: SnackBarService = inject(SnackBarService);
 
-  private errorMessages: { [key: number]: string } = {
+  private errorMessages: Record<number, string> = {
     400: 'Solicitud incorrecta. Por favor, verifica los datos enviados.',
     401: 'No autorizado. Por favor, inicia sesión de nuevo.',
     403: 'No tienes permiso para realizar esta acción.',
@@ -25,7 +25,7 @@ export class ResponseInterceptor implements HttpInterceptor {
     504: 'Tiempo de espera agotado. Por favor, inténtalo de nuevo más tarde.',
   };
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(req).pipe(
       tap((event) => {
         if (event instanceof HttpResponse) {
@@ -40,7 +40,7 @@ export class ResponseInterceptor implements HttpInterceptor {
         const message = this.errorMessages[error.status] || 'Ocurrió un error inesperado.';
         this._snackBarService.error(message);
         return throwError(() => error);
-      })
+      }),
     );
   }
 }

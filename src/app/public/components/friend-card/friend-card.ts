@@ -20,8 +20,8 @@ export class FriendCard implements OnInit {
   private readonly _snackBarService: SnackBarService = inject(SnackBarService);
 
   loading: boolean = false;
-  sendingRequest: { [userId: string]: boolean } = {};
-  cancelingRequest: { [userId: string]: boolean } = {};
+  sendingRequest: Record<string, boolean> = {};
+  cancelingRequest: Record<string, boolean> = {};
   params: any = {};
   users: UserMongoComplete[] = [];
   paginationParams: PaginationInterface = {
@@ -91,10 +91,10 @@ export class FriendCard implements OnInit {
     this._friendRequestService.sendFriendRequest(userId).subscribe({
       next: (response) => {
         this._snackBarService.success(
-          response.message || 'Solicitud de amistad enviada correctamente'
+          response.message || 'Solicitud de amistad enviada correctamente',
         );
         this.users = this.users.map((user) =>
-          user.id === userId ? { ...user, hasPendingRequest: true, isSender: true } : user
+          user.id === userId ? { ...user, hasPendingRequest: true, isSender: true } : user,
         );
         this.sendingRequest[userId] = false;
       },
@@ -115,11 +115,11 @@ export class FriendCard implements OnInit {
     this._friendRequestService.cancelFriendRequest(userId).subscribe({
       next: (response) => {
         this._snackBarService.success(
-          response.message || 'Solicitud de amistad cancelada correctamente'
+          response.message || 'Solicitud de amistad cancelada correctamente',
         );
 
         this.users = this.users.map((user) =>
-          user.id === userId ? { ...user, hasPendingRequest: false, isSender: null } : user
+          user.id === userId ? { ...user, hasPendingRequest: false, isSender: null } : user,
         );
         this.cancelingRequest[userId] = false;
       },

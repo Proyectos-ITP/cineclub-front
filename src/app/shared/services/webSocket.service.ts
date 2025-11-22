@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import SockJS from 'sockjs-client';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { environment } from '../../../environments/environment';
@@ -31,11 +31,9 @@ export class WebSocketService {
   public friendRequests$ = this.friendRequestsSubject.asObservable();
 
   private friendRequestAcceptedSubject = new BehaviorSubject<FriendRequestNotification | null>(
-    null
+    null,
   );
   public friendRequestAccepted$ = this.friendRequestAcceptedSubject.asObservable();
-
-  constructor() {}
 
   connect(userId: string, token: string): void {
     if (this.stompClient && this.connectionStatus.value) {
@@ -89,7 +87,7 @@ export class WebSocketService {
 
         const currentRequests = this.friendRequestsSubject.value;
         this.friendRequestsSubject.next([notification, ...currentRequests]);
-      }
+      },
     );
     this.subscriptions.set('friend-requests', friendRequestsSub);
 
@@ -99,7 +97,7 @@ export class WebSocketService {
         const notification: FriendRequestNotification = JSON.parse(message.body);
 
         this.friendRequestAcceptedSubject.next(notification);
-      }
+      },
     );
     this.subscriptions.set('friend-requests-accepted', friendAcceptedSub);
   }

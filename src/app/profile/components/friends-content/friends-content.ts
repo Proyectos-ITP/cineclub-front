@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -26,11 +26,9 @@ export class FriendsContent implements OnInit {
   hasNext = false;
   hasPrevious = false;
 
-  constructor(
-    private friendRequestService: FriendRequestService,
-    private dialog: MatDialog,
-    private snackBar: SnackBarService
-  ) {}
+  private readonly _friendRequestService: FriendRequestService = inject(FriendRequestService);
+  private readonly _dialog: MatDialog = inject(MatDialog);
+  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
 
   ngOnInit() {
     this.loadFriends();
@@ -44,7 +42,7 @@ export class FriendsContent implements OnInit {
       size: this.pageSize,
     };
 
-    this.friendRequestService.getFriends(query).subscribe({
+    this._friendRequestService.getFriends(query).subscribe({
       next: (res) => {
         this.friends = res.data || [];
         this.total = res.total;
@@ -55,14 +53,14 @@ export class FriendsContent implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener amigos:', err);
-        this.snackBar.error('Error al cargar amigos');
+        this._snackBarService.error('Error al cargar amigos');
         this.loading = false;
       },
     });
   }
 
   openRemoveFriendDialog(friendId: string, friendName: string) {
-    const dialogRef = this.dialog.open(YesNoDialogComponent, {
+    const dialogRef = this._dialog.open(YesNoDialogComponent, {
       data: {
         title: '¿Eliminar amigo?',
         message: `¿Estás seguro de que deseas eliminar a ${friendName} de tu lista de amigos?`,
@@ -79,14 +77,14 @@ export class FriendsContent implements OnInit {
   removeFriend(friendId: string) {
     this.loading = true;
 
-    this.friendRequestService.removeFriend(friendId).subscribe({
+    this._friendRequestService.removeFriend(friendId).subscribe({
       next: () => {
-        this.snackBar.success('Amigo eliminado');
+        this._snackBarService.success('Amigo eliminado');
         this.loadFriends();
       },
       error: (err) => {
         console.error(err);
-        this.snackBar.error('No se pudo eliminar');
+        this._snackBarService.error('No se pudo eliminar');
         this.loading = false;
       },
     });

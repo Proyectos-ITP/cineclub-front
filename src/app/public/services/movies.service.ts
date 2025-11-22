@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -57,7 +58,7 @@ export class MoviesService {
     return this._httpClient.post(
       `${environment.backendUrl}collections`,
       { movieId },
-      { headers: this.headers }
+      { headers: this.headers },
     );
   }
 

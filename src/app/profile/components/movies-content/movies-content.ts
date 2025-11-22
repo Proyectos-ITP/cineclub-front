@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MoviesService } from '../../../public/services/movies.service';
 import { MoviesInterface } from '../../../public/interface/movies.interface';
 import { CommonModule } from '@angular/common';
@@ -19,11 +19,9 @@ export class MoviesContent implements OnInit {
   movies: MoviesInterface[] = [];
   loading = false;
 
-  constructor(
-    private moviesService: MoviesService,
-    private dialog: MatDialog,
-    private snackBar: SnackBarService
-  ) {}
+  private readonly _moviesService: MoviesService = inject(MoviesService);
+  private readonly _dialog: MatDialog = inject(MatDialog);
+  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
 
   ngOnInit() {
     this.loadSavedMovies();
@@ -32,21 +30,21 @@ export class MoviesContent implements OnInit {
   loadSavedMovies() {
     this.loading = true;
 
-    this.moviesService.getSavedMovies().subscribe({
+    this._moviesService.getSavedMovies().subscribe({
       next: (res) => {
         this.movies = res.data?.[0]?.movies || [];
         this.loading = false;
       },
       error: (err) => {
         console.error('Error al obtener películas guardadas:', err);
-        this.snackBar.error('Error al cargar películas guardadas');
+        this._snackBarService.error('Error al cargar películas guardadas');
         this.loading = false;
       },
     });
   }
 
   openDeleteMovieDialog(movieId: string) {
-    const dialogRef = this.dialog.open(YesNoDialogComponent, {
+    const dialogRef = this._dialog.open(YesNoDialogComponent, {
       data: {
         title: '¿Eliminar película?',
         message: 'Esta acción no se puede deshacer.',
@@ -63,14 +61,14 @@ export class MoviesContent implements OnInit {
   removeMovie(movieId: string) {
     this.loading = true;
 
-    this.moviesService.removeMovieFromCollection(movieId).subscribe({
+    this._moviesService.removeMovieFromCollection(movieId).subscribe({
       next: () => {
-        this.snackBar.success('Película eliminada');
+        this._snackBarService.success('Película eliminada');
         this.loadSavedMovies();
       },
       error: (err) => {
         console.error(err);
-        this.snackBar.error('No se pudo eliminar');
+        this._snackBarService.error('No se pudo eliminar');
         this.loading = false;
       },
     });

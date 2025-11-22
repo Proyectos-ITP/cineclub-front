@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, Input, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -60,7 +60,7 @@ export class FriendInfoCard implements OnInit {
     } catch (err: Error | unknown) {
       console.error('Error cargando perfil del amigo:', err);
       this.errorMessage.set(
-        err instanceof Error ? err.message : 'Error desconocido al cargar el perfil.'
+        err instanceof Error ? err.message : 'Error desconocido al cargar el perfil.',
       );
     } finally {
       this.loading.set(false);

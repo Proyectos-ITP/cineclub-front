@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -18,13 +18,14 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
   styleUrls: ['./friend-library-tabs.scss'],
 })
 export class FriendLibraryTabs implements OnInit {
+  private readonly _moviesService: MoviesService = inject(MoviesService);
+  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+
   @Input({ required: true }) friendId!: string;
 
   movies: MoviesInterface[] = [];
   books: LibraryInterface[] = BOOKS;
   loadingMovies = false;
-
-  constructor(private moviesService: MoviesService, private snackBar: SnackBarService) {}
 
   ngOnInit(): void {
     this.loadFriendMovies();
@@ -33,14 +34,14 @@ export class FriendLibraryTabs implements OnInit {
   loadFriendMovies(): void {
     this.loadingMovies = true;
 
-    this.moviesService.getUserSavedMovies(this.friendId).subscribe({
+    this._moviesService.getUserSavedMovies(this.friendId).subscribe({
       next: (res) => {
         this.movies = res.data?.[0]?.movies || [];
         this.loadingMovies = false;
       },
       error: (err) => {
         console.error('Error al obtener películas del amigo:', err);
-        this.snackBar.error('Error al cargar películas del amigo');
+        this._snackBarService.error('Error al cargar películas del amigo');
         this.loadingMovies = false;
       },
     });
