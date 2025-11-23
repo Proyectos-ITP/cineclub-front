@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { supabase } from '../../supabaseClient';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
-import { SnackBarService } from '../../shared/services/snackBar.service';
+import { NotificationsService } from '../../shared/services/notifications.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ import { SnackBarService } from '../../shared/services/snackBar.service';
 export class AuthCallbackService {
   private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _router: Router = inject(Router);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   async handleCallback() {
     try {
@@ -62,7 +62,7 @@ export class AuthCallbackService {
         transformedProfile
       );
 
-      this._snackBarService.success('¡Cuenta verificada exitosamente! Bienvenido.');
+      this._notificationsService.success('¡Cuenta verificada exitosamente! Bienvenido.');
       await this._router.navigateByUrl('/');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +72,7 @@ export class AuthCallbackService {
       await supabase.auth.signOut();
       this._tokenService.clearSession();
 
-      this._snackBarService.info(
+      this._notificationsService.info(
         'Tu cuenta ha sido verificada exitosamente. Por favor, inicia sesión con tus credenciales.'
       );
       await this._router.navigateByUrl('/auth/login');

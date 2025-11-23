@@ -4,7 +4,7 @@ import { MoviesInterface } from '../../../public/interface/movies.interface';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { MatIcon } from '@angular/material/icon';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
@@ -21,7 +21,7 @@ export class MoviesContent implements OnInit {
 
   private readonly _moviesService: MoviesService = inject(MoviesService);
   private readonly _dialog: MatDialog = inject(MatDialog);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   ngOnInit() {
     this.loadSavedMovies();
@@ -37,7 +37,7 @@ export class MoviesContent implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener películas guardadas:', err);
-        this._snackBarService.error('Error al cargar películas guardadas');
+        this._notificationsService.error('Error al cargar películas guardadas');
         this.loading = false;
       },
     });
@@ -63,12 +63,12 @@ export class MoviesContent implements OnInit {
 
     this._moviesService.removeMovieFromCollection(movieId).subscribe({
       next: () => {
-        this._snackBarService.success('Película eliminada');
+        this._notificationsService.success('Película eliminada');
         this.loadSavedMovies();
       },
       error: (err) => {
         console.error(err);
-        this._snackBarService.error('No se pudo eliminar');
+        this._notificationsService.error('No se pudo eliminar');
         this.loading = false;
       },
     });

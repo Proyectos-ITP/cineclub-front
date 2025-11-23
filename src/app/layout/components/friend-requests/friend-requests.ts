@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 import { UserMongoComplete } from '../../../auth/interfaces/user.interface';
 import { FriendRequestStatusPipe } from '../../../shared/pipes/friend-request-status.pipe';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { WebSocketService } from '../../../shared/services/webSocket.service';
 
 @Component({
@@ -22,7 +22,7 @@ import { WebSocketService } from '../../../shared/services/webSocket.service';
 export class FriendRequests implements OnInit, OnDestroy {
   private readonly _friendRequestService: FriendRequestService = inject(FriendRequestService);
   private readonly _userService: UserService = inject(UserService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private webSocketService: WebSocketService = inject(WebSocketService);
   private destroy$ = new Subject<void>();
 
@@ -131,7 +131,7 @@ export class FriendRequests implements OnInit, OnDestroy {
     this._friendRequestService.acceptFriendRequest(senderId).subscribe({
       next: () => {
         this.loadReceivedRequests();
-        this._snackBarService.success('Solicitud aceptada');
+        this._notificationsService.success('Solicitud aceptada');
       },
       error: (err) => {
         console.error('❌ Error al aceptar solicitud:', err);
@@ -153,13 +153,13 @@ export class FriendRequests implements OnInit, OnDestroy {
   cancelRequest(receiverId: string): void {
     this._friendRequestService.cancelFriendRequest(receiverId).subscribe({
       next: (response) => {
-        this._snackBarService.success(response.message || 'Solicitud cancelada correctamente');
+        this._notificationsService.success(response.message || 'Solicitud cancelada correctamente');
         this.loadSentRequests();
       },
       error: (err) => {
         console.error('❌ Error al cancelar solicitud:', err);
         const errorMessage = err?.error?.message || 'No se pudo cancelar la solicitud';
-        this._snackBarService.error(errorMessage);
+        this._notificationsService.error(errorMessage);
       },
     });
   }

@@ -10,13 +10,13 @@ import { Router } from '@angular/router';
 import { Session } from '@supabase/supabase-js';
 import { BehaviorSubject, Observable, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { SupabaseService } from '../../auth/services/supabase.service';
-import { SnackBarService } from '../services/snackBar.service';
+import { NotificationsService } from '../services/notifications.service';
 
 @Injectable()
 export class RefreshTokenInterceptor implements HttpInterceptor {
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
   private readonly _router: Router = inject(Router);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   private isRefreshingToken: boolean = false;
   private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
@@ -68,7 +68,7 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
               if (error) {
                 this._supabaseService.signOut();
                 this._router.navigate(['/auth/login']);
-                this._snackBarService.error('Tu sesión caducó');
+                this._notificationsService.error('Tu sesión caducó');
                 observer.error(error);
               } else {
                 localStorage.setItem('access_token', data.session?.access_token || '');
@@ -83,7 +83,7 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
             } else {
               this._supabaseService.signOut();
               this._router.navigate(['/auth/login']);
-              this._snackBarService.error('Tu sesión caducó');
+              this._notificationsService.error('Tu sesión caducó');
               observer.error('No refresh token available');
             }
             this.isRefreshingToken = false;
@@ -92,7 +92,7 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
             this.isRefreshingToken = false;
             this._supabaseService.signOut();
             this._router.navigate(['/auth/login']);
-            this._snackBarService.error('Tu sesión caducó');
+            this._notificationsService.error('Tu sesión caducó');
             observer.error(err);
           });
       });

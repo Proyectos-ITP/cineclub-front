@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MoviesService } from '../../../public/services/movies.service';
 import { MoviesInterface } from '../../../public/interface/movies.interface';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { LibraryInterface } from '../../interfaces/library.interface';
 import { CardRecomendations } from '../card-recomendations/card-recomendations';
 import { BOOKS } from '../../constants/library.constants';
@@ -19,7 +19,7 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
 })
 export class FriendLibraryTabs implements OnInit {
   private readonly _moviesService: MoviesService = inject(MoviesService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   @Input({ required: true }) friendId!: string;
 
@@ -41,7 +41,7 @@ export class FriendLibraryTabs implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener películas del amigo:', err);
-        this._snackBarService.error('Error al cargar películas del amigo');
+        this._notificationsService.error('Error al cargar películas del amigo');
         this.loadingMovies = false;
       },
     });

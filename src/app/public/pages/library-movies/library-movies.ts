@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 
 @Component({
   selector: 'app-library-movies',
@@ -25,7 +25,7 @@ import { SnackBarService } from '../../../shared/services/snackBar.service';
 })
 export class LibraryMovies implements OnInit {
   private readonly _moviesService: MoviesService = inject(MoviesService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   movies: MoviesInterface[] = [];
   loading = true;
@@ -73,14 +73,14 @@ export class LibraryMovies implements OnInit {
   guardarPelicula(movie: MoviesInterface): void {
     this._moviesService.saveMovieToCollection(movie.id!).subscribe({
       next: () => {
-        this._snackBarService.success('Película guardada correctamente');
+        this._notificationsService.success('Película guardada correctamente');
       },
       error: (err) => {
         console.error('Error al guardar la película:', err);
         if (err.status === 409) {
-          this._snackBarService.error('Película ya guardada');
+          this._notificationsService.error('Película ya guardada');
         } else {
-          this._snackBarService.error('❌ No se pudo guardar la película.');
+          this._notificationsService.error('❌ No se pudo guardar la película.');
         }
       },
     });

@@ -141,8 +141,8 @@
     pointer-events: auto;
     position: fixed;
     z-index: 9999;
-    width: auto;
-    max-width: 400px;
+    min-width: 400px;
+    max-width: 500px;
     margin: 10px;
     background-color: white;
     border-radius: 5px;

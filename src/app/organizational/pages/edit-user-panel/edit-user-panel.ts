@@ -15,7 +15,7 @@ import { map, Observable, startWith, take } from 'rxjs';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Country } from '../../../auth/interfaces/country.interface';
 import { UserAdminService } from '../../services/userAdmin.service';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { RoleTypeInterface } from '../../../auth/interfaces/user.interface';
 import { RamdomPasswordService } from '../../../shared/services/ramdomPassword.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
@@ -54,7 +54,7 @@ export class EditUserPanel implements OnInit {
   private readonly _http: HttpClient = inject(HttpClient);
   private readonly _supabaseClient = inject(SupabaseClient);
   private readonly _userAdminService: UserAdminService = inject(UserAdminService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _ramdomPassword: RamdomPasswordService = inject(RamdomPasswordService);
   private readonly _ngZone: NgZone = inject(NgZone);
 
@@ -124,7 +124,7 @@ export class EditUserPanel implements OnInit {
       }
     } catch (error: any) {
       console.error('❌ Error al cargar usuario:', error);
-      this._snackBarService.error('No se pudo cargar el usuario.');
+      this._notificationsService.error('No se pudo cargar el usuario.');
       this._router.navigate(['/organizational/see-users']);
     } finally {
       this._ngZone.run(() => {
@@ -170,7 +170,7 @@ export class EditUserPanel implements OnInit {
   async saveUser() {
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
-      this._snackBarService.error('Por favor completa todos los campos requeridos.');
+      this._notificationsService.error('Por favor completa todos los campos requeridos.');
       return;
     }
 
@@ -184,7 +184,7 @@ export class EditUserPanel implements OnInit {
       }
     } catch (error: any) {
       console.error('❌ Error al guardar usuario:', error);
-      this._snackBarService.error(error.message || 'Error al guardar el usuario.');
+      this._notificationsService.error(error.message || 'Error al guardar el usuario.');
     } finally {
       this.loading = false;
     }
@@ -244,11 +244,11 @@ export class EditUserPanel implements OnInit {
 
     if (resetError) {
       console.error('❌ Error al enviar correo de contraseña:', resetError);
-      this._snackBarService.warning(
+      this._notificationsService.warning(
         'Usuario creado, pero no se pudo enviar el correo. Usa "Restablecer contraseña" desde el login.'
       );
     } else {
-      this._snackBarService.success(
+      this._notificationsService.success(
         `Correo enviado a ${formData.email} para cambiar su contraseña`
       );
     }
@@ -276,7 +276,7 @@ export class EditUserPanel implements OnInit {
 
       if (error) throw error;
 
-      this._snackBarService.success('Usuario actualizado exitosamente.');
+      this._notificationsService.success('Usuario actualizado exitosamente.');
       this._router.navigate(['/organizational/see-users']);
     } catch (error: any) {
       console.error('❌ Error al actualizar usuario:', error);

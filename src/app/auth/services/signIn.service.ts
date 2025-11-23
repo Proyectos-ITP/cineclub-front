@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { inject, Injectable } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { SnackBarService } from '../../shared/services/snackBar.service';
+import { NotificationsService } from '../../shared/services/notifications.service';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
 import { SupabaseService } from './supabase.service';
@@ -11,7 +11,7 @@ import { UserWithRoleInterface } from '../interfaces/session.interface';
   providedIn: 'root',
 })
 export class SignInService {
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _supabaseClient = inject(SupabaseClient);
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
@@ -93,7 +93,7 @@ export class SignInService {
         );
 
         await this._router.navigate(['/profile/register-profile']);
-        this._snackBarService.info('Completa tu perfil antes de continuar.');
+        this._notificationsService.info('Completa tu perfil antes de continuar.');
         return { ...data, userWithRole: minimalUser };
       }
 
@@ -107,12 +107,11 @@ export class SignInService {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
       await this._router.navigate(['/']);
-      this._snackBarService.success('¡Bienvenido de nuevo!');
 
       return { ...data, userWithRole };
     } catch (error: any) {
       console.error('❌ Error en signIn:', error);
-      this._snackBarService.error(error.message || 'Error iniciando sesión.');
+      this._notificationsService.error(error.message || 'Error iniciando sesión.');
       throw error;
     }
   }
@@ -169,7 +168,7 @@ export class SignInService {
               this._tokenService.saveSession(access_token, refresh_token, minimalUser);
 
               await this._router.navigate(['/profile/register-profile']);
-              this._snackBarService.info('Completa tu perfil antes de continuar.');
+              this._notificationsService.info('Completa tu perfil antes de continuar.');
               resolve(sessionData.session);
               return;
             }
@@ -180,7 +179,6 @@ export class SignInService {
 
             await new Promise((resolve) => setTimeout(resolve, 100));
             await this._router.navigate(['/']);
-            this._snackBarService.success('¡Bienvenido de nuevo!');
 
             resolve(sessionData.session);
           }
@@ -194,7 +192,7 @@ export class SignInService {
       });
     } catch (error: any) {
       console.error('❌ Error en signInWithGoogle:', error);
-      this._snackBarService.error('Error al iniciar sesión con Google.');
+      this._notificationsService.error('Error al iniciar sesión con Google.');
       throw error;
     }
   }
@@ -208,7 +206,7 @@ export class SignInService {
       this._tokenService.clearSession();
       this._supabaseService.clearUser();
       this._router.navigate(['/auth/login']);
-      this._snackBarService.success('Sesión cerrada correctamente.');
+      this._notificationsService.success('Sesión cerrada correctamente.');
     }
   }
 }
