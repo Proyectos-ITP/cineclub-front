@@ -7,6 +7,7 @@
 @use 'assets/styles/mat-theming';
 @use 'assets/styles/mat-config-theme';
 @use 'assets/styles/animations';
+@use 'ngx-toastr/toastr';
 
 @tailwind base;
 @tailwind components;

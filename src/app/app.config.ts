@@ -22,6 +22,7 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
 import { getMaterialPaginatorTranslations } from './shared/utilities/material-paginator-translations';
 import { ToastrModule } from 'ngx-toastr';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
+import { notificationsInterceptorInterceptor } from './shared/interceptors/notifications.interceptor.interceptor';
 
 registerLocaleData(localeEs);
 
@@ -31,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideNativeDateAdapter(MAT_NATIVE_DATE_FORMATS),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor, notificationsInterceptorInterceptor])),
     importProvidersFrom(
       ToastrModule.forRoot({
         preventDuplicates: true,

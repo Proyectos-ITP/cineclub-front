@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
 import { Country } from '../../interfaces/country.interface';
 import { UserInterface } from '../../interfaces/user.interface';
 import { SignUpService } from '../../services/signUp.service';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 
 @Component({
   selector: 'app-register',
@@ -49,7 +49,7 @@ export class Register implements OnInit {
   private readonly _passwordValidationService: CustomValidationsService =
     inject(CustomValidationsService);
   private readonly _singUpService: SignUpService = inject(SignUpService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _router: Router = inject(Router);
   private readonly _http: HttpClient = inject(HttpClient);
   private readonly _fb: FormBuilder = inject(FormBuilder);
@@ -104,7 +104,7 @@ export class Register implements OnInit {
 
   async registerSupabase() {
     if (!this.personalInfoForm.valid || !this.accountInfoForm.valid) {
-      this._snackBarService.error('Por favor completa todos los campos correctamente');
+      this._notificationsService.error('Por favor completa todos los campos correctamente');
       this.personalInfoForm.markAllAsTouched();
       this.accountInfoForm.markAllAsTouched();
       return;

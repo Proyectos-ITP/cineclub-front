@@ -5,7 +5,7 @@ import { PaginationInterface } from '../../../shared/interfaces/pagination.inter
 import { UserFriend } from '../../services/userFriend.service';
 import { UserMongoComplete } from '../../../auth/interfaces/user.interface';
 import { FriendRequestService } from '../../../shared/services/friend-request.service';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 
 @Component({
   selector: 'app-friend-card',
@@ -17,7 +17,7 @@ import { SnackBarService } from '../../../shared/services/snackBar.service';
 export class FriendCard implements OnInit {
   private readonly _userFriend: UserFriend = inject(UserFriend);
   private readonly _friendRequestService: FriendRequestService = inject(FriendRequestService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   loading: boolean = false;
   sendingRequest: Record<string, boolean> = {};
@@ -90,7 +90,7 @@ export class FriendCard implements OnInit {
 
     this._friendRequestService.sendFriendRequest(userId).subscribe({
       next: (response) => {
-        this._snackBarService.success(
+        this._notificationsService.success(
           response.message || 'Solicitud de amistad enviada correctamente',
         );
         this.users = this.users.map((user) =>
@@ -101,7 +101,7 @@ export class FriendCard implements OnInit {
       error: (err) => {
         console.error('❌ Error al enviar solicitud de amistad:', err);
         const errorMessage = err?.error?.message || 'No se pudo enviar la solicitud de amistad';
-        this._snackBarService.error(errorMessage);
+        this._notificationsService.error(errorMessage);
         this.sendingRequest[userId] = false;
       },
     });
@@ -114,7 +114,7 @@ export class FriendCard implements OnInit {
 
     this._friendRequestService.cancelFriendRequest(userId).subscribe({
       next: (response) => {
-        this._snackBarService.success(
+        this._notificationsService.success(
           response.message || 'Solicitud de amistad cancelada correctamente',
         );
 
@@ -126,7 +126,7 @@ export class FriendCard implements OnInit {
       error: (err) => {
         console.error('❌ Error al cancelar solicitud de amistad:', err);
         const errorMessage = err?.error?.message || 'No se pudo cancelar la solicitud de amistad';
-        this._snackBarService.error(errorMessage);
+        this._notificationsService.error(errorMessage);
         this.cancelingRequest[userId] = false;
       },
     });

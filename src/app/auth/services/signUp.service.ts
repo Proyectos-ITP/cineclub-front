@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { SnackBarService } from '../../shared/services/snackBar.service';
+import { NotificationsService } from '../../shared/services/notifications.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { TokenService } from './token.service';
 
@@ -7,7 +7,7 @@ import { TokenService } from './token.service';
   providedIn: 'root',
 })
 export class SignUpService {
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _tokenService: TokenService = inject(TokenService);
   private readonly _supabaseClient = inject(SupabaseClient);
 
@@ -91,9 +91,9 @@ export class SignUpService {
           userWithRole
         );
 
-        this._snackBarService.success('¡Registro exitoso!');
+        this._notificationsService.success('¡Registro exitoso!');
       } else {
-        this._snackBarService.info(
+        this._notificationsService.info(
           'Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.'
         );
       }
@@ -102,7 +102,7 @@ export class SignUpService {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('❌ Error completo en signUp:', err);
-      this._snackBarService.error(err.message || 'Error desconocido al registrarse.');
+      this._notificationsService.error(err.message || 'Error desconocido al registrarse.');
       throw err;
     }
   }

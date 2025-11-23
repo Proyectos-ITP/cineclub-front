@@ -11,7 +11,7 @@ import { map, Observable, startWith, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Country } from '../../../auth/interfaces/country.interface';
 import { SupabaseService } from '../../../auth/services/supabase.service';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { Router, NavigationStart } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { TokenService } from '../../../auth/services/token.service';
@@ -42,7 +42,7 @@ export class RegisterProfile implements OnInit, OnDestroy {
 
   private readonly _supabaseService: SupabaseService = inject(SupabaseService);
   private readonly _profileService: ProfileService = inject(ProfileService);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _http: HttpClient = inject(HttpClient);
   private readonly _fb: FormBuilder = inject(FormBuilder);
   private readonly _router: Router = inject(Router);
@@ -69,7 +69,7 @@ export class RegisterProfile implements OnInit, OnDestroy {
     this.navigationSubscription = this._router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (event.navigationTrigger === 'popstate') {
-          this._snackBarService.info('Debes completar tu perfil antes de continuar');
+          this._notificationsService.info('Debes completar tu perfil antes de continuar');
           history.pushState(null, '', location.href);
         }
       }
@@ -104,7 +104,7 @@ export class RegisterProfile implements OnInit, OnDestroy {
   async registerProfile() {
     if (this.complementInfo.invalid) {
       this.complementInfo.markAllAsTouched();
-      this._snackBarService.error('Por favor completa todos los campos correctamente');
+      this._notificationsService.error('Por favor completa todos los campos correctamente');
       return;
     }
 
@@ -116,7 +116,7 @@ export class RegisterProfile implements OnInit, OnDestroy {
       const user = this._supabaseService.currentUserValue;
 
       if (!user) {
-        this._snackBarService.error('No se encontró usuario autenticado');
+        this._notificationsService.error('No se encontró usuario autenticado');
         this._router.navigate(['/auth/login']);
         return;
       }
@@ -169,14 +169,14 @@ export class RegisterProfile implements OnInit, OnDestroy {
         );
       }
 
-      this._snackBarService.success('¡Perfil completado exitosamente!');
+      this._notificationsService.success('¡Perfil completado exitosamente!');
 
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       this._router.navigate(['/']);
     } catch (error) {
       console.error('Error guardando perfil:', error);
-      this._snackBarService.error('Error al guardar el perfil. Inténtalo de nuevo.');
+      this._notificationsService.error('Error al guardar el perfil. Inténtalo de nuevo.');
     } finally {
       this.isSubmitting = false;
     }

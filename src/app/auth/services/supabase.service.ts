@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { SnackBarService } from '../../shared/services/snackBar.service';
+import { NotificationsService } from '../../shared/services/notifications.service';
 import { supabase } from '../../supabaseClient';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class SupabaseService {
   private readonly currentUser = new BehaviorSubject<User | null>(null);
   private readonly isInitialized = new BehaviorSubject<boolean>(false);
 
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private authInitialized: boolean = false;
 
   constructor() {
@@ -53,7 +53,7 @@ export class SupabaseService {
               if (upsertError) {
                 console.error('❌ Error al crear perfil tras confirmar correo:', upsertError);
               } else {
-                this._snackBarService.success('Tu perfil ha sido creado correctamente');
+                this._notificationsService.success('Tu perfil ha sido creado correctamente');
               }
 
               localStorage.removeItem('pendingUserData');

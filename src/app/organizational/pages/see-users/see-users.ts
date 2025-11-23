@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
@@ -102,7 +102,7 @@ export class SeeUsers implements OnInit {
   private readonly _http: HttpClient = inject(HttpClient);
   private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _matDialog: MatDialog = inject(MatDialog);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _supabaseClient = inject(SupabaseClient);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -217,16 +217,16 @@ export class SeeUsers implements OnInit {
       this._userAdminService.deleteUserPanel(id).subscribe({
         error: (error) => {
           console.error('❌ Error al eliminar usuario en backend:', error);
-          this._snackBarService.error('No se pudo eliminar el usuario en el backend.');
+          this._notificationsService.error('No se pudo eliminar el usuario en el backend.');
         },
       });
 
-      this._snackBarService.success('Usuario eliminado correctamente.');
+      this._notificationsService.success('Usuario eliminado correctamente.');
       await this.loadUsers();
       return true;
     } catch (error: any) {
       console.error('❌ Error al eliminar usuario:', error.message);
-      this._snackBarService.error('No se pudo eliminar el usuario.');
+      this._notificationsService.error('No se pudo eliminar el usuario.');
       this.loading = false;
       throw error;
     }

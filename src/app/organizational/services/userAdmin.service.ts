@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, inject } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { SnackBarService } from '../../shared/services/snackBar.service';
+import { NotificationsService } from '../../shared/services/notifications.service';
 import { supabase } from '../../supabaseClient';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
@@ -30,7 +30,7 @@ export interface UserSearchParams {
 })
 export class UserAdminService {
   private readonly supabase: SupabaseClient = supabase;
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _httpClient: HttpClient = inject(HttpClient);
 
   async getUsers(page: number = 1, limit: number = 10, params: UserSearchParams = {}) {
@@ -87,7 +87,7 @@ export class UserAdminService {
       return { data: transformedData, count };
     } catch (error: any) {
       console.error('❌ Error al obtener usuarios:', error.message);
-      this._snackBarService.error('No se pudieron cargar los usuarios.');
+      this._notificationsService.error('No se pudieron cargar los usuarios.');
       throw error;
     }
   }
@@ -104,7 +104,7 @@ export class UserAdminService {
       return data || [];
     } catch (error: any) {
       console.error('❌ Error al obtener roles:', error.message);
-      this._snackBarService.error('No se pudieron cargar los roles.');
+      this._notificationsService.error('No se pudieron cargar los roles.');
       throw error;
     }
   }

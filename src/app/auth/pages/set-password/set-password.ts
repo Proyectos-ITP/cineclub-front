@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { AuthCard } from '../../components/auth-card/auth-card';
 import { TokenService } from '../../services/token.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
@@ -40,7 +40,7 @@ export class SetPassword implements OnInit {
   private readonly _router: Router = inject(Router);
   private readonly _route: ActivatedRoute = inject(ActivatedRoute);
   private readonly _supabaseClient = inject(SupabaseClient);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
   private readonly _tokenService: TokenService = inject(TokenService);
 
   constructor() {
@@ -63,7 +63,7 @@ export class SetPassword implements OnInit {
 
     if (error || !session) {
       console.error('❌ Error obteniendo sesión:', error);
-      this._snackBarService.error('Link inválido o expirado. Por favor solicita un nuevo correo.');
+      this._notificationsService.error('Link inválido o expirado. Por favor solicita un nuevo correo.');
       this._router.navigate(['/auth/login']);
     }
   }
@@ -94,13 +94,13 @@ export class SetPassword implements OnInit {
       await this._supabaseClient.auth.signOut();
       this._tokenService.clearSession();
 
-      this._snackBarService.success(
+      this._notificationsService.success(
         '¡Contraseña establecida correctamente! Ahora puedes iniciar sesión.',
       );
       this._router.navigate(['/auth/login']);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      this._snackBarService.error(error.message || 'Error al establecer la contraseña.');
+      this._notificationsService.error(error.message || 'Error al establecer la contraseña.');
     } finally {
       this.isLoading = false;
     }

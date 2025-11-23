@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { FriendRequestService } from '../../../shared/services/friend-request.service';
-import { SnackBarService } from '../../../shared/services/snackBar.service';
+import { NotificationsService } from '../../../shared/services/notifications.service';
 import { YesNoDialogComponent } from '../../../shared/components/yes-no-dialog/yes-no-dialog.component';
 import { FriendInterface } from '../../interfaces/friends.interface';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
@@ -28,7 +28,7 @@ export class FriendsContent implements OnInit {
 
   private readonly _friendRequestService: FriendRequestService = inject(FriendRequestService);
   private readonly _dialog: MatDialog = inject(MatDialog);
-  private readonly _snackBarService: SnackBarService = inject(SnackBarService);
+  private readonly _notificationsService: NotificationsService = inject(NotificationsService);
 
   ngOnInit() {
     this.loadFriends();
@@ -53,7 +53,7 @@ export class FriendsContent implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener amigos:', err);
-        this._snackBarService.error('Error al cargar amigos');
+        this._notificationsService.error('Error al cargar amigos');
         this.loading = false;
       },
     });
@@ -79,12 +79,12 @@ export class FriendsContent implements OnInit {
 
     this._friendRequestService.removeFriend(friendId).subscribe({
       next: () => {
-        this._snackBarService.success('Amigo eliminado');
+        this._notificationsService.success('Amigo eliminado');
         this.loadFriends();
       },
       error: (err) => {
         console.error(err);
-        this._snackBarService.error('No se pudo eliminar');
+        this._notificationsService.error('No se pudo eliminar');
         this.loading = false;
       },
     });
